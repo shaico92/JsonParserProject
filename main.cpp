@@ -19,8 +19,8 @@ char *strncpy( char *dest,  char *src, size_t n);
 int main(){
 
 
-string t ="{\"wawa\":{\"key\":178},\"wvawa\":{\"kehy\":14},\"wawa\":{\"keyt\":\"mama\"}}";
-auto vectorofkeyys= parseData(t,"\"key\"");
+string t ="{\"wawa\":{\"keyt\":178},\"wvawa\":{\"keyt\":\"}\"},\"wawa\":{\"keyt\":\"mama\"}}";
+auto vectorofkeyys= parseData(t,"\"keyt\"");
 
 printValues(vectorofkeyys,t);
 
@@ -70,9 +70,19 @@ void printValues(vector<KeyFinderHelper> ptrOfchar,string toCheckAgainst){
      
       //recording the value
       int numberOfQuotes=0;
-      while (numberOfQuotes<2&&*pos!='}')
+      while (numberOfQuotes<2)
       {
+          if ((*pos=='}')&&numberOfQuotes>0)
+          {
+            /* code */
+            break;
+            
+          }
+          
+
+
           //checking if startign quotes
+
           if (*pos=='\"')
           {
               numberOfQuotes++;
