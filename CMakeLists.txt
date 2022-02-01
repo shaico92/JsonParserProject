@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.16.3)
 # CMakeLists files in this project can
 # refer to the root source directory of the project as ${HELLO_SOURCE_DIR} and
 # to the root binary directory of the project as ${HELLO_BINARY_DIR}.
+project(jsonParser)
 add_executable(jsonParser main.cpp)
 
 set(CMAKE_C_COMPILER /usr/bin/g++)
