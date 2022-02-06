@@ -4,10 +4,11 @@ cmake_minimum_required(VERSION 3.16.3)
 # refer to the root source directory of the project as ${HELLO_SOURCE_DIR} and
 # to the root binary directory of the project as ${HELLO_BINARY_DIR}.
 project(jsonParser)
-add_executable(jsonParser main.cpp)
+add_executable(jsonParser main.cpp  JsonBuilder.cpp)
 
 set(CMAKE_C_COMPILER /usr/bin/g++)
 set(CMAKE_CXX_COMPILER /usr/bin/g++)
+
 set(Tikia ${CMAKE_CURRENT_SOURCE_DIR})
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${Tikia}/bin)
 # Recurse into the "Hello" and "Demo" subdirectories. This does not actually

@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <vector>
+#include "JsonBuilder.h"
 using namespace std;
 
 struct KeyFinderHelper
@@ -19,7 +20,16 @@ char *strncpy( char *dest,  char *src, size_t n);
 int main(){
 
 
-string t ="{\"wawa\":{\"keyt\":178},\"wvawa\":{\"keyt\":\"}\"},\"wawa\":{\"keyt\":\"mama\"}}";
+string t ="{\"wawa\":{\"keyt\":178,\"keytc\":\"sss\"},\"wvawa\":{\"keyt\":\"}\"},\"wawa\":{\"keyt\":\"mama\"}}";
+
+JSONString2JsonElement js2e;
+int i =0;
+int calls =0;
+JSONELEMENT* father= new JSONELEMENT();
+auto f =js2e.FindJsonKey(t,i);
+
+
+
 auto vectorofkeyys= parseData(t,"\"keyt\"");
 
 printValues(vectorofkeyys,t);
