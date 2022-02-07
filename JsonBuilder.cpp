@@ -397,17 +397,13 @@ string JSONBuilder::str(JSONELEMENT& elementToChoose) {
 
 
 #pragma region JSONString2JsonElement
-JSONELEMENT* JSONString2JsonElement::FindJsonKey(std::string json,int i,JSONELEMENT* jsonElementFather) {
+JSONELEMENT* JSONString2JsonElement::FindJsonKey(std::string json,int i,JSONELEMENT* jsonElementFather,int& refrenceIndexInRootJsonString) {
 
 i++;
 
 
 	//finding the key
-	if (i>json.length())
-	{
-		cout<<"wowowoo cowboy u outa bounds";
-		return NULL;
-	}
+
 	
 
 
@@ -461,16 +457,23 @@ i++;
 
 	if (je->type==typeOfJsonElement::_object)
 	{
-jsonElementFather->elmenetsptr.push_back(FindJsonKey( je->entireValuAsString,  0,je ));
+jsonElementFather->elmenetsptr.push_back(FindJsonKey( je->entireValuAsString,  0,je,refrenceIndexInRootJsonString ));
 		
 	}
 		if (je->type==typeOfJsonElement::_val)
 	{
 jsonElementFather->elmenetsptr.push_back(je);
+
+			
 		
 	}
 
-
+refrenceIndexInRootJsonString=i+je->entireValuAsString.length();
+			if (json[refrenceIndexInRootJsonString]==',')
+			{
+				
+				FindJsonKey( jsonElementFather->entireValuAsString,  refrenceIndexInRootJsonString,jsonElementFather,refrenceIndexInRootJsonString );
+			}
 
 	
 	return jsonElementFather;
@@ -596,14 +599,15 @@ startIndex= int(index);
 		
 	while (index<json.length())
 	{
-		if (json[index]=='\"')
-		{
-			count++;
-		}
-		if (json[index]=='\"')
+			if (json[index]=='\"'&&count>0)
 		{
 			count--;
 		}
+		else if (json[index]=='\"')
+		{
+			count++;
+		}
+	
 		// if its not zero already its probably a number 
 			
 
@@ -623,12 +627,20 @@ startIndex= int(index);
 		index++;
 //add check if , or } and decremente index 
 
+			if ((theObjectSoFar->type==typeOfJsonElement::_val)
+		&&(json[json.length()-1]==','))
+		{
+			theObjectSoFar->partOfArray;
+			
+		}
+
 		if ((theObjectSoFar->type==typeOfJsonElement::_val)
-		&&json[json.length()-1]==','||json[json.length()-1]=='}')
+		&&(json[json.length()-1]==','||json[json.length()-1]=='}'))
 		{
 			index--;
 		}
-			
+	
+
 
 
 

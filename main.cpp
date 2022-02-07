@@ -20,13 +20,15 @@ char *strncpy( char *dest,  char *src, size_t n);
 int main(){
 
 
-string t ="{\"wawa\":{\"keyt\":178,\"keytc\":\"sss\"},\"wvawa\":{\"keyt\":\"}\"},\"wawa\":{\"keyt\":\"mama\"}}";
+string t ="{\"wawa\":{\"keyt\":178,\"keytc\":sss},\"wvawa\":{\"keytShloimFS\":\"}\"},\"wawa\":{\"keyt\":\"mama\"}}";
 string f ="{\"keyt\":\"}\"}";
 JSONString2JsonElement js2e;
 int i =0;
 int calls =0;
+int refrenceInIndex=0;
 JSONELEMENT* father= new JSONELEMENT();
-auto ff =js2e.FindJsonKey(f,i,father);
+father->entireValuAsString=t;
+auto ff =js2e.FindJsonKey(t,i,father,refrenceInIndex);
 
 
 

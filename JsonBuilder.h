@@ -84,7 +84,7 @@ struct JSONString2JsonElement
 	std::string FindKeyValueEnd(int index,std::string json,JSONELEMENT* theObjectSoFar) ;
 	typeOfJsonElement FindValueType(std::string json, int indexInString);
 
-	JSONELEMENT* FindJsonKey(std::string json,int i,JSONELEMENT* jsonElementFather);
+	JSONELEMENT* FindJsonKey(std::string json,int i,JSONELEMENT* jsonElementFather,int& refrenceIndexInRootJsonString);
 
 	JSONELEMENT* FindJsonValue(std::string json, int &i, JSONELEMENT* element);
 
