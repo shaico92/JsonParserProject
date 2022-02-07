@@ -47,7 +47,7 @@ void JSONELEMENT::append(std::ostringstream& oss, std::vector<JSONELEMENT*> elme
 	// 
 	//this is cpp11 standard
 
-	#if CPPSTD==201103L // std11 
+	#if CPPSTD==201103L||CPPSTD==199711 // std11 
 	
 	for each(auto& e in elmenets)
 	{
@@ -247,7 +247,7 @@ JSONELEMENT* JSONBuilder::create_array(std::string key, std::vector<JSONELEMENT*
 	{
 		return e;
 	}
-	#if CPPSTD==201103L // std11 
+	#if  CPPSTD==201103L||CPPSTD==199711 // std11 
 
 	for each(auto& son in sons)
 	{
