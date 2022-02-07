@@ -80,11 +80,11 @@ struct JSONBuilder {
 
 struct JSONString2JsonElement
 {
-	JSONELEMENT* MASTER;
-	std::string FindKeyValueEnd(int& index,std::string json,JSONELEMENT* theObjectSoFar) ;
-	typeOfJsonElement FindValueType(std::string json, int &indexInString);
+	
+	std::string FindKeyValueEnd(int index,std::string json,JSONELEMENT* theObjectSoFar) ;
+	typeOfJsonElement FindValueType(std::string json, int indexInString);
 
-	JSONELEMENT* FindJsonKey(std::string json,int i);
+	JSONELEMENT* FindJsonKey(std::string json,int i,JSONELEMENT* jsonElementFather);
 
 	JSONELEMENT* FindJsonValue(std::string json, int &i, JSONELEMENT* element);
 

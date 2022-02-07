@@ -256,7 +256,7 @@ JSONELEMENT* JSONBuilder::create_array(std::string key, std::vector<JSONELEMENT*
 	}
 	//root.elmenetsptr.push_back(e);
 	#endif
-	#if CPPSTD==201402L // std11 
+	#if CPPSTD==201402L // std14 
 
 	for (auto& son : sons)
 	{
@@ -397,9 +397,9 @@ string JSONBuilder::str(JSONELEMENT& elementToChoose) {
 
 
 #pragma region JSONString2JsonElement
-JSONELEMENT* JSONString2JsonElement::FindJsonKey(string json, int i ) {
+JSONELEMENT* JSONString2JsonElement::FindJsonKey(std::string json,int i,JSONELEMENT* jsonElementFather) {
 
-
+i++;
 
 
 	//finding the key
@@ -452,27 +452,28 @@ JSONELEMENT* JSONString2JsonElement::FindJsonKey(string json, int i ) {
 	JSONELEMENT* je = new JSONELEMENT();
 	//here already have the key
 	je->key = theKey;
-
+i++;
 	je->type = FindValueType(json, i);
 
 	
 	je->entireValuAsString=FindKeyValueEnd(i,json,je);
-	FindJsonKey( json,  i );
+	
 
 	if (je->type==typeOfJsonElement::_object)
 	{
-	
+jsonElementFather->elmenetsptr.push_back(FindJsonKey( je->entireValuAsString,  0,je ));
+		
+	}
+		if (je->type==typeOfJsonElement::_val)
+	{
+jsonElementFather->elmenetsptr.push_back(je);
 		
 	}
 
-	if (je->type == typeOfJsonElement::_val)
-	{
-		FindJsonValue(json, i,je);
-	
-	}
+
 
 	
-	return MASTER;
+	return jsonElementFather;
 }
 
 JSONELEMENT* JSONString2JsonElement::FindJsonValue(std::string json, int &i, JSONELEMENT* element) {
@@ -530,9 +531,9 @@ JSONELEMENT* JSONString2JsonElement::FindJsonValue(std::string json, int &i, JSO
 	return element;
 
 }
-typeOfJsonElement JSONString2JsonElement::FindValueType(std::string json, int &indexInString) {
+typeOfJsonElement JSONString2JsonElement::FindValueType(std::string json, int indexInString) {
 	//moving the index to pass the ":" in the string
-	indexInString++;
+	
 	while (true)
 	{
 		if (json[indexInString]=='[')
@@ -549,7 +550,7 @@ typeOfJsonElement JSONString2JsonElement::FindValueType(std::string json, int &i
 
 
 
-string JSONString2JsonElement::FindKeyValueEnd(int& index,string json,JSONELEMENT* theObjectSoFar) {
+string JSONString2JsonElement::FindKeyValueEnd(int index,string json,JSONELEMENT* theObjectSoFar) {
 	
 
 	int count=0;
@@ -560,12 +561,13 @@ startIndex= int(index);
 
 	string retString="";
 
-
+	
 
 	//if its an object
 	if (theObjectSoFar->type==typeOfJsonElement::_object)
 	{
 		/* code */
+
 		
 	while (index<json.length())
 	{
@@ -586,7 +588,7 @@ startIndex= int(index);
 
 
 	}
-	index++;
+	
 	}
 	if (theObjectSoFar->type==typeOfJsonElement::_val)
 	{
@@ -617,7 +619,19 @@ startIndex= int(index);
 
 	}
 	}
-	
+//get end of value index;
+		index++;
+//add check if , or } and decremente index 
+
+		if ((theObjectSoFar->type==typeOfJsonElement::_val)
+		&&json[json.length()-1]==','||json[json.length()-1]=='}')
+		{
+			index--;
+		}
+			
+
+
+
 	for(int im=startIndex;im<index;im++)
 	{
 		retString+=json[im];

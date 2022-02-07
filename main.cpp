@@ -21,12 +21,12 @@ int main(){
 
 
 string t ="{\"wawa\":{\"keyt\":178,\"keytc\":\"sss\"},\"wvawa\":{\"keyt\":\"}\"},\"wawa\":{\"keyt\":\"mama\"}}";
-
+string f ="{\"keyt\":\"}\"}";
 JSONString2JsonElement js2e;
 int i =0;
 int calls =0;
 JSONELEMENT* father= new JSONELEMENT();
-auto f =js2e.FindJsonKey(t,i);
+auto ff =js2e.FindJsonKey(f,i,father);
 
 
 
