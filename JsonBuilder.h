@@ -15,6 +15,12 @@ enum typeOfJsonElement {
 	_array,
 };
 
+enum JsonElementValueType {
+	INTEGER=0,
+	STRING,
+	
+};
+
 struct JSONELEMENT {
 
 	
@@ -87,6 +93,8 @@ struct JSONString2JsonElement
 	JSONELEMENT* FindJsonKey(std::string json,int i,JSONELEMENT* jsonElementFather,int& refrenceIndexInRootJsonString);
 
 	JSONELEMENT* FindJsonValue(std::string json, int &i, JSONELEMENT* element);
+
+	void FixJsonElementsValues(JSONELEMENT* father);
 
 	
 };

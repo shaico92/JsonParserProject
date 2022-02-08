@@ -21,16 +21,19 @@ int main(){
 
 
 string t ="{\"wawa\":{\"keyt\":178,\"keytc\":sss},\"wvawa\":{\"keytShloimFS\":\"}\"},\"wawa\":{\"keyt\":\"mama\"}}";
-string f ="{\"keyt\":\"}\"}";
+string f ="{\"wvawa\":{\"keytShloimFS\":\"}\"},\"keyt\":\"}\"}";
 JSONString2JsonElement js2e;
 int i =0;
 int calls =0;
 int refrenceInIndex=0;
 JSONELEMENT* father= new JSONELEMENT();
 father->entireValuAsString=t;
-auto ff =js2e.FindJsonKey(t,i,father,refrenceInIndex);
 
 
+
+auto ff =js2e.FindJsonKey(father->entireValuAsString,i,father,refrenceInIndex);
+  js2e.FixJsonElementsValues(father);
+cout<<father->str();
 
 auto vectorofkeyys= parseData(t,"\"keyt\"");
 
