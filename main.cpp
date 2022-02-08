@@ -21,13 +21,13 @@ int main(){
 
 
 string t ="{\"wawa\":{\"keyt\":178,\"keytc\":sss},\"wvawa\":{\"keytShloimFS\":\"}\"},\"wawa\":{\"keyt\":\"mama\"}}";
-string f ="{\"wvawa\":{\"keytShloimFS\":\"}\"},\"keyt\":\"}\"}";
+string f =/*"{\"wvawa\":{\"keytShloimFS\":\"}\"},*/"{\"arrayman\":[\"na''',me\",\"f}]f\",5,1],\"keyt\":\"}\"}";
 JSONString2JsonElement js2e;
 int i =0;
 int calls =0;
 int refrenceInIndex=0;
 JSONELEMENT* father= new JSONELEMENT();
-father->entireValuAsString=t;
+father->entireValuAsString=f;
 
 
 

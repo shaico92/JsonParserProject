@@ -12,7 +12,9 @@
 enum typeOfJsonElement {
 	_val=0,
 	_object,
-	_array,
+	_NoKeyArray,
+	_ObjectsArray,
+	_NoKeyValue
 };
 
 enum JsonElementValueType {

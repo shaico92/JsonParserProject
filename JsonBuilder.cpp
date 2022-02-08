@@ -16,7 +16,7 @@ void JSONELEMENT::HandleType(JSONELEMENT& element) {
 	case typeOfJsonElement::_val:
 
 			break;
-	case typeOfJsonElement::_array:
+	case typeOfJsonElement::_NoKeyArray:
 
 			break;
 	case typeOfJsonElement::_object:
@@ -148,7 +148,7 @@ void JSONELEMENT::append(std::ostringstream& oss, std::vector<JSONELEMENT*> elme
 				oss << "," << endl;
 			}
 		}
-		else if (e->type == typeOfJsonElement::_array) {
+		else if (e->type == typeOfJsonElement::_NoKeyArray) {
 		
 			oss << '[' << endl;
 		
@@ -225,7 +225,7 @@ JSONBuilder::JSONBuilder() {
 JSONELEMENT JSONBuilder::create_array(std::string key, std::vector<JSONELEMENT>& sons) {
 
 
-	auto e = createobjectptr(key, typeOfJsonElement::_array);
+	auto e = createobjectptr(key, typeOfJsonElement::_NoKeyArray);
 	
 	for (size_t i = 0; i < sons.size(); i++)
 	{
@@ -241,7 +241,7 @@ JSONELEMENT JSONBuilder::create_array(std::string key, std::vector<JSONELEMENT>&
 JSONELEMENT* JSONBuilder::create_array(std::string key, std::vector<JSONELEMENT*> sons) {
 
 
-	auto e = createobjectptr(key, typeOfJsonElement::_array);
+	auto e = createobjectptr(key, typeOfJsonElement::_NoKeyArray);
 
 	if (sons.size()<1)
 	{
@@ -270,7 +270,7 @@ JSONELEMENT* JSONBuilder::create_array(std::string key, std::vector<JSONELEMENT*
 }
 JSONELEMENT* JSONBuilder::create_array(JSONELEMENT* ptrTojsonElm, std::vector<JSONELEMENT*> sons) {
 
-	ptrTojsonElm->type = typeOfJsonElement::_array;
+	ptrTojsonElm->type = typeOfJsonElement::_NoKeyArray;
 	//auto e = createobjectptr(key, typeOfJsonElement::_array);
 
 
@@ -291,7 +291,7 @@ JSONELEMENT* JSONBuilder::create_array(JSONELEMENT* ptrTojsonElm, std::vector<JS
 }
 JSONELEMENT* JSONBuilder::add_to_existing_object(JSONELEMENT* ptrTojsonElm, std::vector<JSONELEMENT*> sons) {
 
-	ptrTojsonElm->type = typeOfJsonElement::_array;
+	ptrTojsonElm->type = typeOfJsonElement::_NoKeyArray;
 	//auto e = createobjectptr(key, typeOfJsonElement::_array);
 
 
@@ -311,7 +311,7 @@ JSONELEMENT* JSONBuilder::add_to_existing_object(JSONELEMENT* ptrTojsonElm, std:
 }
 JSONELEMENT* JSONBuilder::add_to_existing_object(JSONELEMENT* ptrTojsonElm, JSONELEMENT* son) {
 
-	ptrTojsonElm->type = typeOfJsonElement::_array;
+	ptrTojsonElm->type = typeOfJsonElement::_NoKeyArray;
 	//auto e = createobjectptr(key, typeOfJsonElement::_array);
 
 
@@ -513,7 +513,7 @@ JSONELEMENT* JSONString2JsonElement::FindJsonValue(std::string json, int &i, JSO
 		{
 			//handle object
 		}
-		if (element->type == typeOfJsonElement::_array)
+		if (element->type == typeOfJsonElement::_NoKeyArray)
 		{
 		// handle array
 		}
@@ -567,7 +567,13 @@ typeOfJsonElement JSONString2JsonElement::FindValueType(std::string json, int in
 	{
 		if (json[indexInString]=='[')
 		{
-			return typeOfJsonElement::_array;
+			indexInString++;
+			if (json[indexInString]=='{')
+			{
+				return typeOfJsonElement::_ObjectsArray;
+			}
+			
+			return typeOfJsonElement::_NoKeyArray;
 		}
 		if (json[indexInString] == '{')
 		{
@@ -590,7 +596,74 @@ startIndex= int(index);
 
 	string retString="";
 
+	//if its an array of objects
+	if (theObjectSoFar->type==typeOfJsonElement::_ObjectsArray){
+
+	}
+	if (theObjectSoFar->type==typeOfJsonElement::_NoKeyArray){
+
+		string tempValue;
+		int AnotherCounterForParentethees=0;
+		
+		while (index<json.length())
+	{
+//  [\"na''',me\",1,5,\"f}]f\"]
+		if (json[index]=='\"'&&AnotherCounterForParentethees>0)
+		{
+			
+		
+tempValue+=json[index];
+AnotherCounterForParentethees--;
+
+index++;
+
+JSONELEMENT* je= new JSONELEMENT();
+je->type=typeOfJsonElement::_NoKeyValue;
+je->value=tempValue;
+theObjectSoFar->elmenetsptr.push_back(je);
+
+continue;
+		}
+		 if (json[index]=='\"'&&AnotherCounterForParentethees<1)
+		{
+				
+		
+			AnotherCounterForParentethees++;
+		}
+		if ((AnotherCounterForParentethees==0)&&(
+		(json[index]==',')||
+		(json[index]=='[')||
+		(json[index]==']')||
+		(json[index]=='}')||
+		(json[index]=='{')
+		))
+		{
+			if ((json[index]==']'))
+			{
+				break;
+			}
+			
+				index++;
+				tempValue="";
+				continue;
+		}
+		
+
 	
+
+tempValue+=json[index];
+	
+	
+
+		
+		
+		
+		
+			index++;
+	}
+	}
+	//if its an array of values
+
 
 	//if its an object
 	if (theObjectSoFar->type==typeOfJsonElement::_object)
