@@ -77,7 +77,7 @@ void JSONELEMENT::append(std::ostringstream& oss, std::vector<JSONELEMENT*> elme
 				oss << "," << endl;
 			}
 		}
-		else if (e->type == typeOfJsonElement::_array) {
+		else if (e->type == typeOfJsonElement::_ObjectsArray) {
 		
 			oss << '[' << endl;
 		
@@ -467,6 +467,38 @@ jsonElementFather->elmenetsptr.push_back(je);
 			
 		
 	}
+			if (je->type==typeOfJsonElement::_NoKeyArray)
+	{
+jsonElementFather->elmenetsptr.push_back(je);
+
+			
+		
+	}
+				if (je->type==typeOfJsonElement::_ObjectsArray)
+	{
+
+//{\"arrayman\":[{\"cc\":{\"ccz\":1}},{\"ccvb\":\"cxz\"}]}
+		//
+		auto objectz=FindJsonKey( je->entireValuAsString,  0,je,refrenceIndexInRootJsonString );
+
+jsonElementFather->elmenetsptr.push_back(objectz);
+
+			
+		
+	}
+	if (jsonElementFather->type==typeOfJsonElement::_ObjectsArray)
+	{
+		//the two double quotes
+		int smth=0;
+		smth+=je->key.length();
+		smth+=je->entireValuAsString.length();
+		refrenceIndexInRootJsonString=smth;
+		FindJsonKey( je->entireValuAsString,  refrenceIndexInRootJsonString,je,refrenceIndexInRootJsonString );
+		cout<<smth;
+
+	}
+	
+
 
 refrenceIndexInRootJsonString=i+je->entireValuAsString.length();
 			if (json[refrenceIndexInRootJsonString]==',')
@@ -598,60 +630,156 @@ startIndex= int(index);
 
 	//if its an array of objects
 	if (theObjectSoFar->type==typeOfJsonElement::_ObjectsArray){
+		cout<<"\nobjects array";		
+		
+		//{\"arrayman\":[{\"cc\":{\"ccz\":1}},{\"ccvb\":\"cxz\"}]}
+		string theCurrentJson="";
+	int AnotherCounterForParentethees=0;
+while (index<json.length())
+	{
+		if (json[index]=='\"'&&AnotherCounterForParentethees>0)
+		{
+			AnotherCounterForParentethees--;
+		}
+		else if (json[index]=='\"')
+		{
+			AnotherCounterForParentethees++;
+		}
+			if(AnotherCounterForParentethees<1)
+			
+			{
+
+	if (json[index]=='[')
+		{
+			count++;
+		}
+		if (json[index]==']')
+		{
+			count--;
+		}
+		if (count==0)
+		{
+	theCurrentJson+=json[index];
+			break;
+		}
+
+
+
+			}
+
+	theCurrentJson+=json[index];
+		index++;
+
+
+	}
+
+
+
+return theCurrentJson;
+
+
+
 
 	}
 	if (theObjectSoFar->type==typeOfJsonElement::_NoKeyArray){
 
 		string tempValue;
 		int AnotherCounterForParentethees=0;
+		string theCurrentJson="";
+	while (index<json.length())
+	{
+		if (json[index]=='\"'&&AnotherCounterForParentethees>0)
+		{
+			AnotherCounterForParentethees--;
+		}
+		else if (json[index]=='\"')
+		{
+			AnotherCounterForParentethees++;
+		}
+			if(AnotherCounterForParentethees<1)
+			
+			{
+
+	if (json[index]=='[')
+		{
+			count++;
+		}
+		if (json[index]==']')
+		{
+			count--;
+		}
+		if (count==0)
+		{
+	theCurrentJson+=json[index];
+			break;
+		}
+
+
+
+			}
+
+	theCurrentJson+=json[index];
+		index++;
+
+
+	}
 		
-		while (index<json.length())
+		index=1;
+
+		
+		while (index<theCurrentJson.length())
 	{
 //  [\"na''',me\",1,5,\"f}]f\"]
-		if (json[index]=='\"'&&AnotherCounterForParentethees>0)
+		if (theCurrentJson[index]=='\"'&&AnotherCounterForParentethees>0)
 		{
 			
 		
-tempValue+=json[index];
+tempValue+=theCurrentJson[index];
 AnotherCounterForParentethees--;
 
 index++;
 
-JSONELEMENT* je= new JSONELEMENT();
-je->type=typeOfJsonElement::_NoKeyValue;
-je->value=tempValue;
-theObjectSoFar->elmenetsptr.push_back(je);
+
 
 continue;
 		}
-		 if (json[index]=='\"'&&AnotherCounterForParentethees<1)
+
+
+		 if (theCurrentJson[index]=='\"'&&AnotherCounterForParentethees<1)
 		{
 				
 		
 			AnotherCounterForParentethees++;
 		}
 		if ((AnotherCounterForParentethees==0)&&(
-		(json[index]==',')||
-		(json[index]=='[')||
-		(json[index]==']')||
-		(json[index]=='}')||
-		(json[index]=='{')
+		(theCurrentJson[index]==',')||
+		(theCurrentJson[index]=='[')||
+		(theCurrentJson[index]==']')||
+		(theCurrentJson[index]=='}')||
+		(theCurrentJson[index]=='{')
 		))
 		{
-			if ((json[index]==']'))
-			{
-				break;
-			}
-			
+		
+				if (tempValue.length()>0)
+				{
+				
+							JSONELEMENT* je= new JSONELEMENT();
+je->type=typeOfJsonElement::_NoKeyValue;
+je->value=tempValue;
+theObjectSoFar->elmenetsptr.push_back(je);
+				
 				index++;
 				tempValue="";
-				continue;
+continue;
+				}
+
+				
 		}
 		
 
 	
 
-tempValue+=json[index];
+tempValue+=theCurrentJson[index];
 	
 	
 
@@ -661,6 +789,14 @@ tempValue+=json[index];
 		
 			index++;
 	}
+
+//after finishing loop in array
+
+
+//   [\"na''',me\",6,\"f}]f\",5,1],\"keyt\":\"}\"
+
+	return theCurrentJson;
+
 	}
 	//if its an array of values
 

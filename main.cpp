@@ -21,7 +21,7 @@ int main(){
 
 
 string t ="{\"wawa\":{\"keyt\":178,\"keytc\":sss},\"wvawa\":{\"keytShloimFS\":\"}\"},\"wawa\":{\"keyt\":\"mama\"}}";
-string f =/*"{\"wvawa\":{\"keytShloimFS\":\"}\"},*/"{\"arrayman\":[\"na''',me\",\"f}]f\",5,1],\"keyt\":\"}\"}";
+string f =/*"{\"wvawa\":{\"keytShloimFS\":\"}\"},*/"{\"arrayman\":[{\"cc\":{\"ccz\":1}},{\"ccvb\":\"cxz\"}]}";
 JSONString2JsonElement js2e;
 int i =0;
 int calls =0;
