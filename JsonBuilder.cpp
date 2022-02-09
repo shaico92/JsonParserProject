@@ -478,25 +478,14 @@ jsonElementFather->elmenetsptr.push_back(je);
 	{
 
 //{\"arrayman\":[{\"cc\":{\"ccz\":1}},{\"ccvb\":\"cxz\"}]}
-		//
-		auto objectz=FindJsonKey( je->entireValuAsString,  0,je,refrenceIndexInRootJsonString );
+	
 
-jsonElementFather->elmenetsptr.push_back(objectz);
+jsonElementFather->elmenetsptr.push_back(je);
 
 			
 		
 	}
-	if (jsonElementFather->type==typeOfJsonElement::_ObjectsArray)
-	{
-		//the two double quotes
-		int smth=0;
-		smth+=je->key.length();
-		smth+=je->entireValuAsString.length();
-		refrenceIndexInRootJsonString=smth;
-		FindJsonKey( je->entireValuAsString,  refrenceIndexInRootJsonString,je,refrenceIndexInRootJsonString );
-		cout<<smth;
-
-	}
+	
 	
 
 
@@ -672,6 +661,89 @@ while (index<json.length())
 
 
 	}
+
+// in this loop im dividing the array to json objects and activating the find json key function on them
+
+
+	int findex=1;
+int endIndex=0;
+int pairStartIndex=0;
+int stringBracketsCounter=0;
+int secondCounter=0;
+vector<string> vectorOfJsonObjectsAsStrings;
+while (findex<theCurrentJson.length())
+{
+  	if (theCurrentJson[findex]=='\"'&&stringBracketsCounter>0)
+		{
+			stringBracketsCounter--;
+		}
+		else if (theCurrentJson[findex]=='\"')
+		{
+			stringBracketsCounter++;
+		}
+			if(stringBracketsCounter<1)
+			
+			{
+
+	if (theCurrentJson[findex]=='{')
+		{
+        if (secondCounter==0)
+        {
+         pairStartIndex=findex;
+         secondCounter++;
+        }
+        
+			count++;
+		}
+		if (theCurrentJson[findex]=='}')
+		{
+			count--;
+		}
+
+
+
+
+			}
+
+
+	
+		findex++;
+    		if (count==0&&theCurrentJson[findex]!=',')
+		{
+
+    
+      
+
+
+      endIndex=findex;;
+//auto p1 = std::make_pair(pairStartIndex, endIndex-1);
+        string temp="";
+  for (int i = pairStartIndex; i < endIndex; i++)
+      {
+       
+          if (theCurrentJson[i]==','&&i+1>endIndex-1)
+          {
+            continue;
+          }
+          
+        
+        temp+=theCurrentJson[i];
+        
+        
+      }
+
+    vectorOfJsonObjectsAsStrings.push_back(temp);
+  secondCounter=0;
+		}
+
+}
+for (auto &&jsonString : vectorOfJsonObjectsAsStrings)
+{
+	JSONELEMENT* je= new JSONELEMENT();
+	auto res =FindJsonKey(jsonString,0,theObjectSoFar,refToInt);
+	cout<<res->entireValuAsString;
+//	theObjectSoFar->elmenetsptr.push_back(res);
+}
 
 
 

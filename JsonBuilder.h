@@ -88,7 +88,7 @@ struct JSONBuilder {
 
 struct JSONString2JsonElement
 {
-	
+	int refToInt=0;
 	std::string FindKeyValueEnd(int index,std::string json,JSONELEMENT* theObjectSoFar) ;
 	typeOfJsonElement FindValueType(std::string json, int indexInString);
 

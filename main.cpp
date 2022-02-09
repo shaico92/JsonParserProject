@@ -31,7 +31,10 @@ father->entireValuAsString=f;
 
 
 
-auto ff =js2e.FindJsonKey(father->entireValuAsString,i,father,refrenceInIndex);
+
+
+
+auto ff =js2e.FindJsonKey(father->entireValuAsString,i,father,js2e.refToInt);
   js2e.FixJsonElementsValues(father);
 cout<<father->str();
 
