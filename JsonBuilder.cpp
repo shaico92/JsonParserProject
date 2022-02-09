@@ -510,9 +510,19 @@ refrenceIndexInRootJsonString=i+je->entireValuAsString.length();
 			{
 				father->elmenetsptr.at(i)->value=father->elmenetsptr.at(i)->entireValuAsString;
 				cout<<"key : "<< father->elmenetsptr.at(i)->key<<" value : "<<father->elmenetsptr.at(i)->entireValuAsString<<'\n';
-			}else{
-				FixJsonElementsValues( father->elmenetsptr.at(i));
+				continue;
 			}
+				if (father->elmenetsptr.at(i)->type==typeOfJsonElement::_NoKeyValue)
+			{
+				
+				cout<<"no key value : "<< father->elmenetsptr.at(i)->value<<'\n';
+				continue;
+			}
+			
+			
+			
+				FixJsonElementsValues( father->elmenetsptr.at(i));
+			
 			
 		}
 		
@@ -671,7 +681,7 @@ int pairStartIndex=0;
 int stringBracketsCounter=0;
 int secondCounter=0;
 vector<string> vectorOfJsonObjectsAsStrings;
-while (findex<theCurrentJson.length())
+while (findex<theCurrentJson.length()-1)
 {
   	if (theCurrentJson[findex]=='\"'&&stringBracketsCounter>0)
 		{
@@ -731,7 +741,7 @@ while (findex<theCurrentJson.length())
         
         
       }
-
+		cout<<findex;
     vectorOfJsonObjectsAsStrings.push_back(temp);
   secondCounter=0;
 		}

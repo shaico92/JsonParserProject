@@ -20,6 +20,7 @@ enum typeOfJsonElement {
 enum JsonElementValueType {
 	INTEGER=0,
 	STRING,
+	BOOLEAN
 	
 };
 
@@ -33,7 +34,7 @@ struct JSONELEMENT {
 	bool valueIsObject;
 	typeOfJsonElement type;
 	bool nonull;
-
+	JsonElementValueType valueType;
 	  std::string fatherStart;
 
 	 std::string fatherEnd;

@@ -20,8 +20,8 @@ char *strncpy( char *dest,  char *src, size_t n);
 int main(){
 
 
-string t ="{\"wawa\":{\"keyt\":178,\"keytc\":sss},\"wvawa\":{\"keytShloimFS\":\"}\"},\"wawa\":{\"keyt\":\"mama\"}}";
-string f =/*"{\"wvawa\":{\"keytShloimFS\":\"}\"},*/"{\"arrayman\":[{\"cc\":{\"ccz\":1}},{\"ccvb\":\"cxz\"}]}";
+string t ="{\"wawa\":{\"keyt\":178,\"keytc\":sss},\"arrayman\":[{\"cc\":{\"ccz\":1}},{\"ccvb\":\"cxz\"}],\"wvawa\":{\"keytShloimFS\":\"}\"},\"wawa\":{\"keyt\":\"mama\"}}";
+string f =/*"{\"wvawa\":{\"keytShloimFS\":\"}\"},*/"{\"arrayman\":[{\"cc\":{\"ccz\":1}},{\"ccvb\":\"cxz\"}],\"arrayman\":[\"cc\",\"ccz\"1,\"ccvb\",\"cxz\"]}";
 JSONString2JsonElement js2e;
 int i =0;
 int calls =0;
