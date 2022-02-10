@@ -20,14 +20,14 @@ char *strncpy( char *dest,  char *src, size_t n);
 int main(){
 
 
-string t ="{\"wawa\":{\"keyt\":178,\"keytc\":sss},\"arrayman\":[{\"cc\":{\"ccz\":1}},{\"ccvb\":\"cxz\"}],\"wvawa\":{\"keytShloimFS\":\"}\"},\"wawa\":{\"keyt\":\"mama\"}}";
+string t ="{\"wawa\":{\"keyt\":178,\"keytc\":true},\"arrayman\":[{\"cc\":{\"ccz\":1}},{\"ccvb\":\"cxz\"}],\"wow\":false,\"wvawa\":{\"keytShloimFS\":\"}\"},\"wawa\":{\"keyt\":\"mama\"}}";
 string f =/*"{\"wvawa\":{\"keytShloimFS\":\"}\"},*/"{\"arrayman\":[{\"cc\":{\"ccz\":1}},{\"ccvb\":\"cxz\"}],\"arrayman\":[\"cc\",\"ccz\"1,\"ccvb\",\"cxz\"]}";
 JSONString2JsonElement js2e;
 int i =0;
 int calls =0;
 int refrenceInIndex=0;
 JSONELEMENT* father= new JSONELEMENT();
-father->entireValuAsString=f;
+father->entireValuAsString=t;
 
 
 
@@ -122,16 +122,3 @@ void printValues(vector<KeyFinderHelper> ptrOfchar,string toCheckAgainst){
 
 
 
-
-      char *
-           strncpy(char *dest,  char *src, size_t n)
-           {
-               size_t i;
-
-               for (i = 0; i < n && src[i] != '\0'; i++)
-                   dest[i] = src[i];
-               for ( ; i < n; i++)
-                   dest[i] = '\0';
-
-               return dest;
-           }

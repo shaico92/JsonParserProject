@@ -7,7 +7,7 @@
 
 #define CPPSTD __cplusplus 
 
-
+#pragma region GeneralObjects
 
 enum typeOfJsonElement {
 	_val=0,
@@ -20,7 +20,8 @@ enum typeOfJsonElement {
 enum JsonElementValueType {
 	INTEGER=0,
 	STRING,
-	BOOLEAN
+	BOOLEAN,
+	
 	
 };
 
@@ -57,7 +58,8 @@ struct JSONELEMENT {
 	void append(std::ostringstream& oss, std::vector<JSONELEMENT*> elmenets)const;
 
 };
-
+#pragma endregion
+#pragma region JSONBuilder
 struct JSONBuilder {
 
 	JSONELEMENT root;
@@ -85,11 +87,13 @@ struct JSONBuilder {
 
 
 };
-
-
+#pragma endregion
+#pragma region JSONString2JsonElement
 struct JSONString2JsonElement
+
+
 {
-	int refToInt=0;
+	int refToInt;
 	std::string FindKeyValueEnd(int index,std::string json,JSONELEMENT* theObjectSoFar) ;
 	typeOfJsonElement FindValueType(std::string json, int indexInString);
 
@@ -101,3 +105,12 @@ struct JSONString2JsonElement
 
 	
 };
+#pragma endregion
+
+
+#pragma region UseFullParsing
+
+void SetValueType(JSONELEMENT* element);
+
+char*      strncpy(char *dest,  char *src, size_t n);
+#pragma endregion

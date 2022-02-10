@@ -509,13 +509,16 @@ refrenceIndexInRootJsonString=i+je->entireValuAsString.length();
 			if (father->elmenetsptr.at(i)->type==typeOfJsonElement::_val)
 			{
 				father->elmenetsptr.at(i)->value=father->elmenetsptr.at(i)->entireValuAsString;
-				cout<<"key : "<< father->elmenetsptr.at(i)->key<<" value : "<<father->elmenetsptr.at(i)->entireValuAsString<<'\n';
+				SetValueType(father->elmenetsptr.at(i));
+				cout<<"key : "<< father->elmenetsptr.at(i)->key<<" type is :"<< father->elmenetsptr.at(i)->valueType<<" value : "<<father->elmenetsptr.at(i)->entireValuAsString<<'\n';
+				
 				continue;
 			}
 				if (father->elmenetsptr.at(i)->type==typeOfJsonElement::_NoKeyValue)
 			{
-				
+				SetValueType(father->elmenetsptr.at(i));
 				cout<<"no key value : "<< father->elmenetsptr.at(i)->value<<'\n';
+				
 				continue;
 			}
 			
@@ -747,6 +750,8 @@ while (findex<theCurrentJson.length()-1)
 		}
 
 }
+
+#if CPPSTD==201402L // std11 
 for (auto &&jsonString : vectorOfJsonObjectsAsStrings)
 {
 	JSONELEMENT* je= new JSONELEMENT();
@@ -754,8 +759,16 @@ for (auto &&jsonString : vectorOfJsonObjectsAsStrings)
 	cout<<res->entireValuAsString;
 //	theObjectSoFar->elmenetsptr.push_back(res);
 }
-
-
+#endif; 
+#if CPPSTD==201103L||CPPSTD==199711
+for each(auto &&jsonString in vectorOfJsonObjectsAsStrings)
+{
+	JSONELEMENT* je= new JSONELEMENT();
+	auto res =FindJsonKey(jsonString,0,theObjectSoFar,refToInt);
+	cout<<res->entireValuAsString;
+//	theObjectSoFar->elmenetsptr.push_back(res);
+}
+#endif 
 
 return theCurrentJson;
 
@@ -995,4 +1008,51 @@ index=startIndex;
 
 #pragma endregion
 
+#pragma region UseFullParsing
 
+void SetValueType(JSONELEMENT* element){
+//this is for determin which type the jsonelement value is 
+	int index=0;
+
+	if (element->value[0]=='\"')
+	{
+		//always a string 
+		element->valueType=JsonElementValueType::STRING;
+		return;
+	}
+
+	
+	char TrueOrFalse[5];
+	string FALSE_="false";
+	string TRUE_="true";
+	strncpy(TrueOrFalse,&element->value[index],5);
+	strcmp (TrueOrFalse, FALSE_.c_str());
+	if ((strcmp (TrueOrFalse, FALSE_.c_str())==0)||
+	(strcmp (TrueOrFalse, TRUE_.c_str())==0))
+	{
+		//always a boolean
+			element->valueType=JsonElementValueType::BOOLEAN;
+			return;
+	}
+	
+		element->valueType=JsonElementValueType::INTEGER;
+			return;
+
+	
+	
+
+}
+
+char*      strncpy(char *dest,  char *src, size_t n)
+           {
+               size_t i;
+
+               for (i = 0; i < n && src[i] != '\0'; i++)
+                   dest[i] = src[i];
+               for ( ; i < n; i++)
+                   dest[i] = '\0';
+
+               return dest;
+           }
+
+#pragma endregion
