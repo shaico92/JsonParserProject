@@ -33,6 +33,7 @@ struct JSONELEMENT {
 	std::string entireValuAsString;
 	bool partOfArray;
 	bool valueIsObject;
+	bool lastJsonInArray;
 	typeOfJsonElement type;
 	bool nonull;
 	JsonElementValueType valueType;
@@ -53,7 +54,7 @@ struct JSONELEMENT {
 	JSONELEMENT(const std::string key, const typeOfJsonElement type);
 
 	void	insertSon(const JSONELEMENT& element);
-
+	void ToString_refac(std::ostringstream& oss, std::vector<JSONELEMENT*> elmenets)const;
 	std::string str(int indent = 0)const;
 	void append(std::ostringstream& oss, std::vector<JSONELEMENT*> elmenets)const;
 

@@ -8,7 +8,7 @@ using namespace std;
 
 
 
-JSONELEMENT::JSONELEMENT() {};
+JSONELEMENT::JSONELEMENT():lastJsonInArray(false),partOfArray(false) {};
 
 void JSONELEMENT::HandleType(JSONELEMENT& element) {
 	switch (element.type)
@@ -197,15 +197,117 @@ string JSONELEMENT::str(int indent)const
 	
 	string i(indentsize * indent, ' ');
 
-	append(oss, elmenetsptr);
-
-	
+	//append(oss, elmenetsptr);
+oss<<'{';
+	ToString_refac(oss,elmenetsptr);
+	oss<<'}';
 	return oss.str();
 	//}
 
 }
 
+void JSONELEMENT::ToString_refac(std::ostringstream& oss, std::vector<JSONELEMENT*> elmenets)const{
 
+
+	#if CPPSTD==201103L||CPPSTD==199711 // std11 
+	
+	for each(auto& e in elmenets)
+	{
+		if (e->partOfArray)
+		{
+		oss<<'{';
+		}
+		
+
+
+		if (e->type==typeOfJsonElement::_val)
+		{
+
+			oss<<'\"'<<e->key<<'\"'<<':'<<e->value;
+		}
+		if (e->type==typeOfJsonElement::_NoKeyValue)
+		{
+
+			oss<<e->value;
+		}
+			if (e->type==typeOfJsonElement::_object)
+		{
+			oss<<'\"'<<e->key<<'\"'<<':'<<'{';
+			if (e->elmenetsptr.size()>0)
+			{
+				ToString_refac(oss,e->elmenetsptr);
+			}
+
+				oss<<'}';
+			
+		}
+
+			if (e->type==typeOfJsonElement::_NoKeyArray)
+		{
+			oss<<'\"'<<e->key<<'\"'<<':'<<'[';
+			if (e->elmenetsptr.size()>0)
+			{
+				ToString_refac(oss,e->elmenetsptr);
+			}
+
+				oss<<']';
+			
+		}
+					if (e->type==typeOfJsonElement::_ObjectsArray)
+		{
+			oss<<'\"'<<e->key<<'\"'<<':'<<'[';
+		
+			
+			if (e->elmenetsptr.size()>0)
+			{
+					for each(auto &&elm in e->elmenetsptr)
+			{
+				elm->partOfArray=true;
+			}
+					
+				ToString_refac(oss,e->elmenetsptr);
+				
+				
+				
+
+				
+			}
+
+				oss<<']';
+			
+		}
+
+if (e->partOfArray)
+		{
+		oss<<'}';
+		}
+
+		if (e->lastJsonInArray)
+		{
+			
+		}else{
+			oss<<',';
+		}
+		
+		
+
+	}
+	
+	#endif 
+	
+	#if CPPSTD==201402L //std 14
+
+	
+	
+	for(auto& e : elmenets)
+	{
+	
+	}
+	
+	#endif // std11 
+	
+
+}
 
 
 #pragma endregion
@@ -494,6 +596,8 @@ refrenceIndexInRootJsonString=i+je->entireValuAsString.length();
 			{
 				
 				FindJsonKey( jsonElementFather->entireValuAsString,  refrenceIndexInRootJsonString,jsonElementFather,refrenceIndexInRootJsonString );
+			}else{
+				je->lastJsonInArray=true;
 			}
 
 	
@@ -769,6 +873,20 @@ for each(auto &&jsonString in vectorOfJsonObjectsAsStrings)
 //	theObjectSoFar->elmenetsptr.push_back(res);
 }
 #endif 
+int sizeOfElementsList=theObjectSoFar->elmenetsptr.size();
+if (sizeOfElementsList<1)
+{
+	/* code */
+}else{
+for each(auto &&elements in theObjectSoFar->elmenetsptr)
+{
+	elements->lastJsonInArray=false;
+
+}
+
+	theObjectSoFar->elmenetsptr.at(sizeOfElementsList-1)->lastJsonInArray=true;
+}
+
 
 return theCurrentJson;
 
@@ -884,6 +1002,13 @@ tempValue+=theCurrentJson[index];
 		
 			index++;
 	}
+	int sizeOftheElemetsList=theObjectSoFar->elmenetsptr.size();
+	if (sizeOftheElemetsList<1)
+{
+	/* code */
+}else{
+	theObjectSoFar->elmenetsptr.at(sizeOftheElemetsList-1)->lastJsonInArray=true;
+}
 
 //after finishing loop in array
 

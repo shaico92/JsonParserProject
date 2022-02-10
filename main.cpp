@@ -19,13 +19,13 @@ char *strncpy( char *dest,  char *src, size_t n);
 
 int main(){
 
-
-string t ="{\"wawa\":{\"keyt\":178,\"keytc\":true},\"arrayman\":[{\"cc\":{\"ccz\":1}},{\"ccvb\":\"cxz\"}],\"wow\":false,\"wvawa\":{\"keytShloimFS\":\"}\"},\"wawa\":{\"keyt\":\"mama\"}}";
+string vc="{}";
+string t ="{\"wxawa\":{\"keyt\":178,\"keyzztc\":true},\"arracyman\":[\"cc\",\"ccz\",1,\"ccvb\",\"cxz\"],\"wow\":false,\"arrayzxman\":[{\"cc\":{\"ccz\":1}},{\"ccvb\":\"cxz\"}],\"arrayman\":[{\"cc\":{\"ccz\":1}},{\"ccvb\":\"cxz\"}],\"wvawa\":{\"keytShloimFS\":\"}\"},\"wawa\":{\"keyt\":\"mama\"}}";
 string f =/*"{\"wvawa\":{\"keytShloimFS\":\"}\"},*/"{\"arrayman\":[{\"cc\":{\"ccz\":1}},{\"ccvb\":\"cxz\"}],\"arrayman\":[\"cc\",\"ccz\"1,\"ccvb\",\"cxz\"]}";
 JSONString2JsonElement js2e;
 int i =0;
 int calls =0;
-int refrenceInIndex=0;
+js2e.refToInt=0;
 JSONELEMENT* father= new JSONELEMENT();
 father->entireValuAsString=t;
 
