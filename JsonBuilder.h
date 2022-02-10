@@ -68,22 +68,9 @@ struct JSONBuilder
 
 	JSONELEMENT* root;
 	JSONBuilder();
-	void add_Complex(JSONELEMENT *elm);
+	
 	JSONELEMENT *findByKey(std::string key);
-	JSONELEMENT create_array(std::string key, std::vector<JSONELEMENT> &sons);
-	JSONELEMENT *create_array(std::string key, std::vector<JSONELEMENT *> sons);
-	JSONELEMENT *add_to_existing_object(JSONELEMENT *ptrTojsonElm, std::vector<JSONELEMENT *> sons);
-	JSONELEMENT add_keyval(std::string key, std::string val, typeOfJsonElement type);
-	JSONELEMENT *add_to_existing_object(JSONELEMENT *ptrTojsonElm, JSONELEMENT *son);
-	JSONELEMENT createobjectWithValue(std::string key, std::string val, typeOfJsonElement type = typeOfJsonElement::_val);
 
-	JSONELEMENT *create_array(JSONELEMENT *ptrTojsonElm, std::vector<JSONELEMENT *> sons);
-	JSONELEMENT *createobjectWithNoValue(std::string key, typeOfJsonElement type = typeOfJsonElement::_object);
-	JSONELEMENT *createobjectWithValueptr(std::string key, std::string val, typeOfJsonElement type = typeOfJsonElement::_object);
-
-	JSONELEMENT *createobjectptr(std::string key, typeOfJsonElement type);
-	void add_keyval(std::string key, const JSONELEMENT element, typeOfJsonElement type);
-	void add_Complex(const JSONELEMENT elm);
 	void print();
 	std::string str();
 	std::string str(JSONELEMENT &elementToChoose);
