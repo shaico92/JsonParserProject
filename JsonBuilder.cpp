@@ -33,18 +33,32 @@ JSONELEMENT::JSONELEMENT(const std::string key, const std::string value, const t
 																			};
 
 	JSONELEMENT::JSONELEMENT(const std::string key, const int value, const typeOfJsonElement type):partOfArray(false),key(key+""),value(value+""), type(type)
-	{};
-	JSONELEMENT::JSONELEMENT(const std::string key, const bool value, const typeOfJsonElement type):partOfArray(false),key(key+""),value(value+""), type(type)
-	{};
-	JSONELEMENT::JSONELEMENT(const std::string key, const double value, const typeOfJsonElement type):partOfArray(false),key(key+""), type(type)
 	{
-			if (value)
+		cout<<value;
+			ostringstream oss;
+			oss<<value;
+			this->value=oss.str();
+
+	};
+	JSONELEMENT::JSONELEMENT(const std::string key, const bool value, const typeOfJsonElement type):partOfArray(false),key(key+""),value(value+""), type(type)
+	{
+
+	if (value)
 			{
 				this->value="true";
 			}else{
 				this->value="false";
 			}
-			
+
+		
+	};
+	JSONELEMENT::JSONELEMENT(const std::string key, const double value, const typeOfJsonElement type):partOfArray(false),key(key+""), type(type)
+	{
+		//this->value=to_string(value);
+			cout<<value;
+			ostringstream oss;
+			oss<<value;
+			this->value=oss.str();
 
 	};
 
@@ -203,6 +217,7 @@ string JSONELEMENT::str(int indent) const
 
 	//append(oss, elmenetsptr);
 	oss << '{';
+	
 	ToString_refac(oss, elmenetsptr);
 	oss << '}';
 	return oss.str();
@@ -300,9 +315,8 @@ void JSONELEMENT::ToString_refac(std::ostringstream &oss, std::vector<JSONELEMEN
 
 JSONBuilder::JSONBuilder()
 {
+root=NULL;
 
-	root->fatherStart = "{";
-	root->fatherEnd = "}";
 };
 
 
@@ -488,20 +502,23 @@ key_value->key='\"'+key+'\"';
 }
 JSONELEMENT* JSONBuilder::R_create_json_object(std::string key){
 		JSONELEMENT* obj = new JSONELEMENT(key,typeOfJsonElement::_object);
-
+		obj->partOfArray=false;
 		return obj;
 
 	}
 	JSONELEMENT*  JSONBuilder::R_create_Key_value(std::string key,std::string value){
 		JSONELEMENT* obj = new JSONELEMENT(key,value,typeOfJsonElement::_val);
+			obj->partOfArray=false;
 		return obj;
 	}
 		JSONELEMENT*  JSONBuilder::R_create_Key_value(std::string key,bool value){
 		JSONELEMENT* obj = new JSONELEMENT(key,value,typeOfJsonElement::_val);
+			obj->partOfArray=false;
 		return obj;
 	}
 		JSONELEMENT*  JSONBuilder::R_create_Key_value(std::string key,int value){
 		JSONELEMENT* obj = new JSONELEMENT(key,value,typeOfJsonElement::_val);
+			obj->partOfArray=false;
 		return obj;
 	}
 	JSONELEMENT*  JSONBuilder::R_create_Key_value(std::string key,double value){
@@ -517,6 +534,7 @@ JSONELEMENT* JSONBuilder::R_create_json_object(std::string key){
 
 JSONELEMENT*  JSONBuilder::R_create_noneKey_array(std::string key){
 		JSONELEMENT* obj = new JSONELEMENT(key,typeOfJsonElement::_NoKeyArray);
+			obj->partOfArray=false;
 		return obj;
 }
 JSONELEMENT*  JSONBuilder::R_create_objects_array(std::string key){
@@ -604,7 +622,14 @@ void JSONBuilder::R_add_to_object(JSONELEMENT* jsonObject,vector<JSONELEMENT*> e
 		elements.at(elements.size()-1)->lastJsonInArray=true;
 }
 
-
+void JSONBuilder::R_bundle(JSONELEMENT* element){
+	if (NULL==this->root)
+	{
+		this->root= new JSONELEMENT();
+	}
+		root->elmenetsptr.push_back(element);
+	
+}
 
 
 

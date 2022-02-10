@@ -113,6 +113,7 @@ struct JSONBuilder
 	//objects
 	void R_add_to_object(JSONELEMENT* jsonObject,JSONELEMENT* element);
 	void R_add_to_object(JSONELEMENT* jsonObject,std::vector<JSONELEMENT*> elements);
+	void R_bundle(JSONELEMENT* element);
 };
 #pragma endregion
 #pragma region JSONString2JsonElement

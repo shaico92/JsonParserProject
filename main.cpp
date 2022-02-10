@@ -26,17 +26,25 @@ int main()
 
   auto Object_= js2e.ParsedObject(t);
   //cout << Object_->str();
-    cout<<Object_->elmenetsptr.at(0)->str();
+  
  
   JSONBuilder jb;
   auto obj=jb.R_create_json_object("wowowsuperKey");
-  auto fc= jb.R_create_Key_value("hello",3.4555);
-  auto fcx= jb.R_create_Key_value("hello",4555);
+  auto fc= jb.R_create_Key_value("hello",3.5);
+  auto fcx= jb.R_create_Key_value("helclo",4555);
   jb.R_add_to_object(obj,fc);
   jb.R_add_to_object(obj,fcx);
+  cout<<obj->str();
   auto master = jb.R_create_json_object("mize");
-  jb.root= new JSONELEMENT();
-  jb.R_add_to_object(jb.root,obj);
+  auto arrnokey= jb.R_create_noneKey_array("noKeyArr");
+  auto cvcv=jb.R_create_nokey_value("false");
+  auto ccd=jb.R_create_nokey_value("true");;
+   jb.R_add_to_object(arrnokey,cvcv);
+   jb.R_add_to_object(arrnokey,ccd);
+   jb.R_add_to_object(master,arrnokey);
+  jb.R_add_to_object(master,obj);
+  
+  jb.R_bundle(master);
   cout<<'\n'<<jb.str();
 
 
