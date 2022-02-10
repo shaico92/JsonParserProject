@@ -31,6 +31,24 @@ JSONELEMENT::JSONELEMENT(const std::string key, const std::string value, const t
 																				//	fatherEnd = "}";
 
 																			};
+
+	JSONELEMENT::JSONELEMENT(const std::string key, const int value, const typeOfJsonElement type):partOfArray(false),key(key+""),value(value+""), type(type)
+	{};
+	JSONELEMENT::JSONELEMENT(const std::string key, const bool value, const typeOfJsonElement type):partOfArray(false),key(key+""),value(value+""), type(type)
+	{};
+	JSONELEMENT::JSONELEMENT(const std::string key, const double value, const typeOfJsonElement type):partOfArray(false),key(key+""), type(type)
+	{
+			if (value)
+			{
+				this->value="true";
+			}else{
+				this->value="false";
+			}
+			
+
+	};
+
+
 JSONELEMENT::JSONELEMENT(const std::string key, const typeOfJsonElement type)
 	: key(key), type(type){
 
@@ -283,22 +301,11 @@ void JSONELEMENT::ToString_refac(std::ostringstream &oss, std::vector<JSONELEMEN
 JSONBuilder::JSONBuilder()
 {
 
-	root.fatherStart = "{";
-	root.fatherEnd = "}";
+	root->fatherStart = "{";
+	root->fatherEnd = "}";
 };
 
-JSONELEMENT JSONBuilder::create_array(std::string key, std::vector<JSONELEMENT> &sons)
-{
 
-	auto e = createobjectptr(key, typeOfJsonElement::_NoKeyArray);
-
-	for (size_t i = 0; i < sons.size(); i++)
-	{
-		sons[i].partOfArray = true;
-	}
-
-	return *e;
-}
 JSONELEMENT *JSONBuilder::create_array(std::string key, std::vector<JSONELEMENT *> sons)
 {
 
@@ -384,14 +391,8 @@ JSONELEMENT *JSONBuilder::add_to_existing_object(JSONELEMENT *ptrTojsonElm, JSON
 	return ptrTojsonElm;
 }
 
-JSONELEMENT JSONBuilder::createobjectWithValue(string key, string val, typeOfJsonElement type)
-{
 
-	auto e = JSONELEMENT(key, val, type);
-	//JSONELEMENT e{ key,val,valueIsObject };
 
-	return e;
-}
 
 JSONELEMENT *JSONBuilder::createobjectWithValueptr(string key, string val, typeOfJsonElement type)
 {
@@ -422,11 +423,11 @@ JSONELEMENT *JSONBuilder::createobjectptr(string key, typeOfJsonElement type)
 JSONELEMENT *JSONBuilder::findByKey(string key)
 {
 
-	for (size_t i = 0; i < root.elmenetsptr.size(); i++)
+	for (size_t i = 0; i < root->elmenetsptr.size(); i++)
 	{
-		if (root.elmenetsptr[i]->key == key)
+		if (root->elmenetsptr[i]->key == key)
 		{
-			return root.elmenetsptr[i];
+			return root->elmenetsptr[i];
 		}
 	}
 	return findByKey(key);
@@ -435,23 +436,181 @@ JSONELEMENT *JSONBuilder::findByKey(string key)
 void JSONBuilder::add_Complex(JSONELEMENT *elm)
 {
 
-	root.elmenetsptr.push_back(elm);
+	root->elmenetsptr.push_back(elm);
 }
 
 void JSONBuilder::print()
 {
-	cout << root.str();
+	cout << root->str();
 }
 string JSONBuilder::str()
 {
 
-	return root.str();
+	return root->str();
 }
+
+
+
+
+
+
 
 string JSONBuilder::str(JSONELEMENT &elementToChoose)
 {
 	return elementToChoose.str();
 }
+
+
+
+
+//after refactor
+
+void JSONBuilder::R_add_key_value(std::string key,std::string value,JSONELEMENT* elementToAddTo,JsonElementValueType typeOfval){
+    JSONELEMENT* key_value = new JSONELEMENT();
+    if (typeOfval==JsonElementValueType::STRING)
+    {
+      if (key[0]=='\"'||key[key.length()-1]=='\"')
+      {
+        cout<<" need to insert only none quoted strings";
+        return;
+      }else{
+key_value->key='\"'+key+'\"';
+      key_value->value='\"'+value+'\"';
+
+      }
+	  key_value->type=typeOfJsonElement::_val;
+	  elementToAddTo->elmenetsptr.push_back(key_value);
+      
+      
+    }
+    
+	
+}
+JSONELEMENT* JSONBuilder::R_create_json_object(std::string key){
+		JSONELEMENT* obj = new JSONELEMENT(key,typeOfJsonElement::_object);
+
+		return obj;
+
+	}
+	JSONELEMENT*  JSONBuilder::R_create_Key_value(std::string key,std::string value){
+		JSONELEMENT* obj = new JSONELEMENT(key,value,typeOfJsonElement::_val);
+		return obj;
+	}
+		JSONELEMENT*  JSONBuilder::R_create_Key_value(std::string key,bool value){
+		JSONELEMENT* obj = new JSONELEMENT(key,value,typeOfJsonElement::_val);
+		return obj;
+	}
+		JSONELEMENT*  JSONBuilder::R_create_Key_value(std::string key,int value){
+		JSONELEMENT* obj = new JSONELEMENT(key,value,typeOfJsonElement::_val);
+		return obj;
+	}
+	JSONELEMENT*  JSONBuilder::R_create_Key_value(std::string key,double value){
+		JSONELEMENT* obj = new JSONELEMENT(key,value,typeOfJsonElement::_val);
+		return obj;
+	}
+	JSONELEMENT*  JSONBuilder::R_create_nokey_value(std::string value){
+			JSONELEMENT* obj = new JSONELEMENT();
+			obj->value=value;
+			obj->type=typeOfJsonElement::_NoKeyValue;
+		return obj;
+	}
+
+JSONELEMENT*  JSONBuilder::R_create_noneKey_array(std::string key){
+		JSONELEMENT* obj = new JSONELEMENT(key,typeOfJsonElement::_NoKeyArray);
+		return obj;
+}
+JSONELEMENT*  JSONBuilder::R_create_objects_array(std::string key){
+		JSONELEMENT* obj = new JSONELEMENT(key,typeOfJsonElement::_ObjectsArray);
+		return obj;
+}
+
+void JSONBuilder::R_add_to_no_key_array(JSONELEMENT* array,JSONELEMENT* element){
+	if (array->type!=typeOfJsonElement::_NoKeyArray)
+	{
+		cout<<"can only use no key array with this function";
+		return;
+	}
+	if (element->type!=typeOfJsonElement::_NoKeyValue)
+	{
+		cout<<"can only use no key value with this function";
+		return;
+	}
+	array->elmenetsptr.push_back(element);
+	
+}
+
+void JSONBuilder::R_add_to_no_key_array(JSONELEMENT* array,vector<JSONELEMENT*> elements){
+
+	for (size_t i = 0; i < elements.size(); i++)
+	{
+		elements.at(i)->lastJsonInArray=false;
+		R_add_to_no_key_array(array,elements.at(i));
+	}
+	elements.at(elements.size()-1)->lastJsonInArray=true;
+	
+}
+void JSONBuilder::R_add_to_objects_array(JSONELEMENT* array,JSONELEMENT* element){
+
+	if (array->type!=typeOfJsonElement::_ObjectsArray)
+	{
+		cout<<"can only use no key array with this function";
+		return;
+	}
+	if (element->type==typeOfJsonElement::_NoKeyValue)
+	{
+		cout<<"can only not  use no key value with this function";
+		return;
+	}
+	
+	element->partOfArray=true;
+	
+	array->elmenetsptr.push_back(element);
+
+}
+
+void JSONBuilder::R_add_to_objects_array(JSONELEMENT* array,vector<JSONELEMENT*> elements){
+		
+	for (size_t i = 0; i < elements.size(); i++)
+	{
+			elements.at(i)->lastJsonInArray=false;
+		R_add_to_objects_array(array,elements.at(i));
+	}
+	elements.at(elements.size()-1)->lastJsonInArray=true;
+}
+
+void JSONBuilder::R_add_to_object(JSONELEMENT* jsonObject,JSONELEMENT* element){
+
+	if (jsonObject->type==typeOfJsonElement::_NoKeyValue||jsonObject->type==typeOfJsonElement::_val)
+	{
+		cout<<"can not use the type :"<<jsonObject->type<<"as the object father";
+		return;
+	}
+	
+	if (jsonObject->elmenetsptr.size()>0)
+	{
+		jsonObject->elmenetsptr.at(jsonObject->elmenetsptr.size()-1)->lastJsonInArray=false;
+	}
+	element->lastJsonInArray=true;
+	jsonObject->elmenetsptr.push_back(element);
+}
+
+void JSONBuilder::R_add_to_object(JSONELEMENT* jsonObject,vector<JSONELEMENT*> elements){
+
+	for (size_t i = 0; i < elements.size(); i++)
+	{
+		elements.at(i)->lastJsonInArray=false;
+		R_add_to_objects_array(jsonObject,elements.at(i));
+	}
+		elements.at(elements.size()-1)->lastJsonInArray=true;
+}
+
+
+
+
+
+
+
+
 
 #pragma endregion
 
