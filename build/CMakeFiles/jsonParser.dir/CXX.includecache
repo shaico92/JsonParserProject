@@ -1,0 +1,24 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/shai/Desktop/projects/jsonParser/JsonBuilder.cpp
+JsonBuilder.h
+/home/shai/Desktop/projects/jsonParser/JsonBuilder.h
+
+/home/shai/Desktop/projects/jsonParser/JsonBuilder.h
+iostream
+-
+string
+-
+vector
+-
+sstream
+-
+cstring
+-
+
