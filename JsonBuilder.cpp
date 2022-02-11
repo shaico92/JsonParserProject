@@ -781,10 +781,12 @@ string JSONString2JsonElement::FindKeyValueEnd(int index, string json, JSONELEME
 		}
 		else
 		{
-			for each (auto &&elements in theObjectSoFar->elmenetsptr)
+#if CPPSTD ==201402L
+			for  (auto &&elements : theObjectSoFar->elmenetsptr)
 			{
 				elements->lastJsonInArray = false;
 			}
+#endif
 
 			theObjectSoFar->elmenetsptr.at(sizeOfElementsList - 1)->lastJsonInArray = true;
 		}
@@ -1014,6 +1016,9 @@ void SetValueType(JSONELEMENT *element)
 	string FALSE_ = "false";
 	string TRUE_ = "true";
 	strncpy(TrueOrFalse, &element->value[index], 5);
+
+	#if __linux__
+
 	strcmp(TrueOrFalse, FALSE_.c_str());
 	if ((strcmp(TrueOrFalse, FALSE_.c_str()) == 0) ||
 		(strcmp(TrueOrFalse, TRUE_.c_str()) == 0))
@@ -1022,6 +1027,18 @@ void SetValueType(JSONELEMENT *element)
 		element->valueType = JsonElementValueType::BOOLEAN;
 		return;
 	}
+	#endif
+	#if _WIN32	
+
+	strcmp(TrueOrFalse, FALSE_.c_str());
+	if ((strcmp(TrueOrFalse, FALSE_.c_str()) == 0) ||
+		(strcmp(TrueOrFalse, TRUE_.c_str()) == 0))
+	{
+		//always a boolean
+		element->valueType = JsonElementValueType::BOOLEAN;
+		return;
+	}
+	#endif
 
 	element->valueType = JsonElementValueType::INTEGER;
 	return;
