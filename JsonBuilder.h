@@ -16,6 +16,7 @@ enum typeOfJsonElement
 	_object,
 	_NoKeyArray,
 	_ObjectsArray,
+	_ArraysArray,
 	_NoKeyValue
 };
 

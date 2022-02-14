@@ -457,13 +457,39 @@ JSONELEMENT *JSONString2JsonElement::ConvertToJSONElement(std::string json, int 
 	}
 	if (je->type == typeOfJsonElement::_ObjectsArray)
 	{
-
+		
 		//{\"arrayman\":[{\"cc\":{\"ccz\":1}},{\"ccvb\":\"cxz\"}]}
 
 		jsonElementFather->elmenetsptr.push_back(je);
 	}
 
-	refrenceIndexInRootJsonString = i + je->entireValuAsString.length();
+	
+
+		refrenceIndexInRootJsonString = i + je->entireValuAsString.length();
+
+		if (je->type == typeOfJsonElement::_ArraysArray)
+	{
+		
+		//{\"arrayman\":[{\"cc\":{\"ccz\":1}},{\"ccvb\":\"cxz\"}]}
+
+		jsonElementFather->elmenetsptr.push_back(je);
+
+		refrenceIndexInRootJsonString=refToInt-1;
+		
+	}
+
+	if (refrenceIndexInRootJsonString>json.length())
+	{
+		return jsonElementFather;
+	}
+	
+
+	
+	
+
+	
+	
+	
 	if (json[refrenceIndexInRootJsonString] == ',')
 	{
 
@@ -518,6 +544,10 @@ typeOfJsonElement JSONString2JsonElement::FindValueType(std::string json, int in
 			if (json[indexInString] == '{')
 			{
 				return typeOfJsonElement::_ObjectsArray;
+			}
+			if (json[indexInString] == '[')
+			{
+				return typeOfJsonElement::_ArraysArray;
 			}
 
 			return typeOfJsonElement::_NoKeyArray;
@@ -782,6 +812,167 @@ string JSONString2JsonElement::FindKeyValueEnd(int index, string json, JSONELEME
 		return theCurrentJson;
 	}
 	//if its an array of values
+
+	//if its an arrays Array
+	if (theObjectSoFar->type==typeOfJsonElement::_ArraysArray)
+	{
+		/* code */
+
+
+string tempValue;
+		int AnotherCounterForParentethees = 0;
+		string theCurrentJson = "";
+		while (index < json.length())
+		{
+			if (json[index] == '\"' && AnotherCounterForParentethees > 0)
+			{
+				AnotherCounterForParentethees--;
+			}
+			else if (json[index] == '\"')
+			{
+				AnotherCounterForParentethees++;
+			}
+			if (AnotherCounterForParentethees < 1)
+
+			{
+
+				if (json[index] == '[')
+				{
+					count++;
+				}
+				if (json[index] == ']')
+				{
+					count--;
+				}
+				if (count == 0)
+				{
+					theCurrentJson += json[index];
+					break;
+				}
+			}
+
+			theCurrentJson += json[index];
+			index++;
+		}
+
+
+
+
+
+		
+		index=1;
+		int endIndex = 0;
+		int pairStartIndex = 0;
+		int stringBracketsCounter = 0;
+		int secondCounter = 0;
+		vector<string> vectorOfJsonObjectsAsStrings;
+		while (index < theCurrentJson.length() - 1)
+		{
+			if (theCurrentJson[index] == '\"' && stringBracketsCounter > 0)
+			{
+				stringBracketsCounter--;
+			}
+			else if (theCurrentJson[index] == '\"')
+			{
+				stringBracketsCounter++;
+			}
+			if (stringBracketsCounter < 1)
+
+			{
+
+				if (theCurrentJson[index] == '[')
+				{
+					if (secondCounter == 0)
+					{
+						pairStartIndex = index;
+						secondCounter++;
+					}
+
+					count++;
+				}
+				if (theCurrentJson[index] == ']')
+				{
+					count--;
+				}
+			}
+
+			index++;
+			if (count == 0 && theCurrentJson[index] != ',')
+			{
+
+				endIndex = index;
+				;
+				//auto p1 = std::make_pair(pairStartIndex, endIndex-1);
+				string temp = "";
+				for (int i = pairStartIndex; i < endIndex; i++)
+				{
+
+					if (json[i] == ',' && i + 1 > endIndex - 1)
+					{
+						continue;
+					}
+
+					temp += theCurrentJson[i];
+				}
+			//	cout << findex;
+				vectorOfJsonObjectsAsStrings.push_back(temp);
+				secondCounter = 0;
+			}
+		}
+		
+		int sizeOftheElemetsList = vectorOfJsonObjectsAsStrings.size();
+		if (sizeOftheElemetsList < 1)
+		{
+			/* code */
+		}
+		else
+		{
+			for (size_t zi = 0; zi < sizeOftheElemetsList; zi++)
+			{
+				/* code */
+				
+			JSONELEMENT* jsonNoKeyArray= new JSONELEMENT();
+			jsonNoKeyArray->entireValuAsString	=vectorOfJsonObjectsAsStrings.at(zi);
+			jsonNoKeyArray->type = typeOfJsonElement::_NoKeyArray;
+			
+				//TODO: fix the naming
+				int ind=0;
+					FindKeyValueEnd( ind,jsonNoKeyArray->entireValuAsString, jsonNoKeyArray);
+
+			theObjectSoFar->elmenetsptr.push_back(jsonNoKeyArray);
+			
+
+
+
+			if (zi==0)
+			{
+				theObjectSoFar->entireValuAsString+="[";
+			}
+theObjectSoFar->entireValuAsString+=jsonNoKeyArray->entireValuAsString;
+			if (zi+1<sizeOftheElemetsList)
+			{
+				theObjectSoFar->entireValuAsString+=',';
+				//theObjectSoFar->entireValuAsString+="]";
+			}
+			
+
+			}
+			theObjectSoFar->entireValuAsString+="]";
+			
+
+			theObjectSoFar->elmenetsptr.at(sizeOftheElemetsList - 1)->lastJsonInArray = true;
+
+	//	refToInt+=theObjectSoFar->entireValuAsString.length();
+		return theObjectSoFar->entireValuAsString;
+
+		}
+		
+			
+	
+
+	}
+	
+
 
 	//if its an object
 	if (theObjectSoFar->type == typeOfJsonElement::_object)
