@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <fstream>
 #include <vector>
 #include "JsonBuilder.h"
 using namespace std;
@@ -11,16 +12,18 @@ struct KeyFinderHelper
   int positionInString;
   int sizeOfKey;
 };
+string readFileIntoString(const string& path);
 
 int main()
 {
 
   string vc = "{}";
+  auto dd=readFileIntoString("C:/VSCode/JsonParserProject/data.txt");
   string t = "{\"wxawa\":{\"keyt\":178,\"keyzztc\":true},\"arracyman\":[\"cc\",\"ccz\",1,\"ccvb\",\"cxz\"],\"arrayzxman\":[{\"cc\":{\"ccz\":1}},{\"ccvb\":\"cxz\"}],\"wow\":false,\"arrayman\":[{\"cc\":{\"ccz\":false}},{\"ccvb\":\"cxz\"}],\"wvawa\":{\"keytShloimFS\":\"}\"},\"wawa\":{\"keyt\":\"mama\"}}";
   string f = /*"{\"wvawa\":{\"keytShloimFS\":\"}\"},*/ "{\"arrayman\":[{\"cc\":{\"ccz\":1}},{\"ccvb\":\"cxz\"}],\"arrayman\":[\"cc\",\"ccz\"1,\"ccvb\",\"cxz\"]}";
   JSONString2JsonElement js2e;
 
-  auto Object_ = js2e.ParsedObject(t);
+  auto Object_ = js2e.ParsedObject(dd);
   //cout << Object_->str();
 
   JSONBuilder jb;
@@ -51,4 +54,14 @@ int main()
   std::cout << "from jsonparser";
 
   return 0;
+}
+
+string readFileIntoString(const string& path) {
+    ifstream input_file(path);
+    if (!input_file.is_open()) {
+        cerr << "Could not open the file - '"
+             << path << "'" << endl;
+        exit(EXIT_FAILURE);
+    }
+    return string((istreambuf_iterator<char>(input_file)), istreambuf_iterator<char>());
 }
