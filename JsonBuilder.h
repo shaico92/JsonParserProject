@@ -118,4 +118,5 @@ struct JSONString2JsonElement
 void SetValueType(JSONELEMENT *element);
 
 char *strncpy(char *dest, char *src, size_t n);
+std::string removingTabsAndBreakLines(std::string json);
 #pragma endregion

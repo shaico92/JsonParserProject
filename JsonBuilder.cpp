@@ -474,16 +474,17 @@ JSONELEMENT *JSONString2JsonElement::ConvertToJSONElement(std::string json, int 
 
 		jsonElementFather->elmenetsptr.push_back(je);
 
-		refrenceIndexInRootJsonString=refToInt-1;
-		
+	
+		//refrenceIndexInRootJsonString=refToInt-1;
 	}
 
+
+	
 	if (refrenceIndexInRootJsonString>json.length())
 	{
-		return jsonElementFather;
+			return jsonElementFather;
 	}
 	
-
 	
 	
 
@@ -866,7 +867,7 @@ string tempValue;
 		int stringBracketsCounter = 0;
 		int secondCounter = 0;
 		vector<string> vectorOfJsonObjectsAsStrings;
-		while (index < theCurrentJson.length() - 1)
+		while (index < theCurrentJson.length())
 		{
 			if (theCurrentJson[index] == '\"' && stringBracketsCounter > 0)
 			{
@@ -907,10 +908,10 @@ string tempValue;
 				for (int i = pairStartIndex; i < endIndex; i++)
 				{
 
-					if (json[i] == ',' && i + 1 > endIndex - 1)
-					{
-						continue;
-					}
+					// if (json[i] == ',' && i + 1 > endIndex - 1)
+					// {
+					// 	continue;
+					// }
 
 					temp += theCurrentJson[i];
 				}
@@ -927,6 +928,27 @@ string tempValue;
 		}
 		else
 		{
+			while (json[refToInt]!='\"')
+			{
+				/* code */
+				++refToInt;
+			}
+			string keySize="";
+			++refToInt;
+			while (json[refToInt]!='\"')
+			{
+				/* code */
+				keySize+=json[refToInt];
+				++refToInt;
+			}
+			
+
+			++refToInt;
+			++refToInt;
+			++refToInt;
+
+
+
 			for (size_t zi = 0; zi < sizeOftheElemetsList; zi++)
 			{
 				/* code */
@@ -937,27 +959,29 @@ string tempValue;
 			
 				//TODO: fix the naming
 				int ind=0;
-					FindKeyValueEnd( ind,jsonNoKeyArray->entireValuAsString, jsonNoKeyArray);
+
+					FindKeyValueEnd( refToInt,json, jsonNoKeyArray);
 
 			theObjectSoFar->elmenetsptr.push_back(jsonNoKeyArray);
+					refToInt+=jsonNoKeyArray->entireValuAsString.length();
+
+
+
+
+
+			}
+			theObjectSoFar->entireValuAsString+='[';
+				for (size_t index_ = 0; index_ < theObjectSoFar->elmenetsptr.size(); index_++)
+			{
+				
+
+				theObjectSoFar->entireValuAsString+=theObjectSoFar->elmenetsptr.at(index_)->entireValuAsString;
+
 			
 
-
-
-			if (zi==0)
-			{
-				theObjectSoFar->entireValuAsString+="[";
 			}
-theObjectSoFar->entireValuAsString+=jsonNoKeyArray->entireValuAsString;
-			if (zi+1<sizeOftheElemetsList)
-			{
-				theObjectSoFar->entireValuAsString+=',';
-				//theObjectSoFar->entireValuAsString+="]";
-			}
-			
-
-			}
-			theObjectSoFar->entireValuAsString+="]";
+			theObjectSoFar->entireValuAsString+=']';
+			//theObjectSoFar->entireValuAsString+="]";
 			
 
 			theObjectSoFar->elmenetsptr.at(sizeOftheElemetsList - 1)->lastJsonInArray = true;
@@ -1065,7 +1089,8 @@ JSONELEMENT *JSONString2JsonElement::ParsedObject(std::string jsonString)
 {
 	int i = 0;
 	JSONELEMENT *jsonElementFather = new JSONELEMENT();
-	jsonElementFather->entireValuAsString = jsonString;
+	
+	jsonElementFather->entireValuAsString = removingTabsAndBreakLines(jsonString);
 	refToInt = 0;
 	ConvertToJSONElement(jsonElementFather->entireValuAsString, i, jsonElementFather, refToInt);
 	FixJsonElementsValues(jsonElementFather);
@@ -1185,6 +1210,59 @@ char *strncpy(char *dest, char *src, size_t n)
 		dest[i] = '\0';
 
 	return dest;
+}
+
+std::string removingTabsAndBreakLines(std::string json)
+{
+vector<int> indexesOFRegex;
+int index=0;
+ostringstream stream;
+int stringBracketsCounter=0;
+int secondCounter=0;
+while (index<json.length())
+{
+
+	if (json[index] == '\"' && stringBracketsCounter > 0)
+			{
+				stringBracketsCounter--;
+			}
+			else if (json[index] == '\"')
+			{
+				stringBracketsCounter++;
+			}
+			if (stringBracketsCounter < 1)
+
+			{
+				if (json[index]=='\t'||json[index]=='\n'||json[index]==' ')
+				{
+
+				}else
+				{
+						stream<<json[index];
+				}
+			
+
+
+			}else{
+
+		stream<<json[index];
+			}
+
+
+			++index;
+
+			
+
+
+
+
+	
+}
+
+
+
+
+return stream.str();
 }
 
 #pragma endregion

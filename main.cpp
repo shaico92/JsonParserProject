@@ -18,9 +18,8 @@ int main()
 {
 
   string vc = "{}";
-  auto dd=readFileIntoString("C:/VSCode/JsonParserProject/shit.txt");
-  string t = "{\"wxawa\":{\"keyt\":178,\"keyzztc\":true},\"arracyman\":[\"cc\",\"ccz\",1,\"ccvb\",\"cxz\"],\"arrayzxman\":[{\"cc\":{\"ccz\":1}},{\"ccvb\":\"cxz\"}],\"wow\":false,\"arrayman\":[{\"cc\":{\"ccz\":false}},{\"ccvb\":\"cxz\"}],\"wvawa\":{\"keytShloimFS\":\"}\"},\"wawa\":{\"keyt\":\"mama\"}}";
-  string f = /*"{\"wvawa\":{\"keytShloimFS\":\"}\"},*/ "{\"arrayman\":[{\"cc\":{\"ccz\":1}},{\"ccvb\":\"cxz\"}],\"arrayman\":[\"cc\",\"ccz\"1,\"ccvb\",\"cxz\"]}";
+  auto dd=readFileIntoString("C:/VSCode/JsonParserProject/data.json");
+  
   JSONString2JsonElement js2e;
 
   auto Object_ = js2e.ParsedObject(dd);
