@@ -80,6 +80,7 @@ struct JSONBuilder
 	JSONELEMENT *R_create_noneKey_array(std::string key);
 	JSONELEMENT *R_create_objects_array(std::string key);
 	JSONELEMENT *R_create_nokey_value(std::string value);
+	JSONELEMENT *R_create_nokeyArray_array(std::string key);
 
 	//no key array
 	void R_add_to_no_key_array(JSONELEMENT *array, JSONELEMENT *element);
@@ -92,6 +93,11 @@ struct JSONBuilder
 	//objects
 	void R_add_to_object(JSONELEMENT *jsonObject, JSONELEMENT *element);
 	void R_add_to_object(JSONELEMENT *jsonObject, std::vector<JSONELEMENT *> elements);
+
+	//arrays array
+	void R_add_to_nokeyArray_array(JSONELEMENT *array, JSONELEMENT *element);
+	void R_add_tonokeyArray_array(JSONELEMENT *array, std::vector<JSONELEMENT *> elements);
+
 	void R_bundle(JSONELEMENT *element);
 };
 #pragma endregion

@@ -164,6 +164,23 @@ void JSONELEMENT::ToString_refac(std::ostringstream &oss, std::vector<JSONELEMEN
 
 			oss << '}';
 		}
+		if (e->type == typeOfJsonElement::_ArraysArray)
+		{
+			oss << '\"' << e->key << '\"' << ':' << '[';
+			if (e->elmenetsptr.size() > 0)
+			{
+                	for  (auto &&elm : e->elmenetsptr)
+				{
+					elm->partOfArray = false;
+				}
+				
+
+
+			}
+
+			oss << ']';
+		}
+
 
 		if (e->type == typeOfJsonElement::_NoKeyArray)
 		{
@@ -181,7 +198,7 @@ void JSONELEMENT::ToString_refac(std::ostringstream &oss, std::vector<JSONELEMEN
 
 			if (e->elmenetsptr.size() > 0)
 			{
-				for (auto &&elm : e->elmenetsptr)
+				for  (auto &&elm : e->elmenetsptr)
 				{
 					elm->partOfArray = true;
 				}
@@ -297,6 +314,11 @@ JSONELEMENT *JSONBuilder::R_create_noneKey_array(std::string key)
 	obj->partOfArray = false;
 	return obj;
 }
+JSONELEMENT *R_create_nokeyArray_array(std::string key){
+	JSONELEMENT *obj = new JSONELEMENT(key, typeOfJsonElement::_ArraysArray);
+	obj->partOfArray = false;
+	return obj;
+}
 JSONELEMENT *JSONBuilder::R_create_objects_array(std::string key)
 {
 	JSONELEMENT *obj = new JSONELEMENT(key, typeOfJsonElement::_ObjectsArray);
@@ -312,7 +334,7 @@ void JSONBuilder::R_add_to_no_key_array(JSONELEMENT *array, JSONELEMENT *element
 	}
 	if (element->type != typeOfJsonElement::_NoKeyValue)
 	{
-		cout << "can only use no key value with this function";
+		cout << "can only add a  no key value with this function";
 		return;
 	}
 	array->elmenetsptr.push_back(element);
@@ -385,6 +407,37 @@ void JSONBuilder::R_add_to_object(JSONELEMENT *jsonObject, vector<JSONELEMENT *>
 	}
 	elements.at(elements.size() - 1)->lastJsonInArray = true;
 }
+
+
+void R_add_to_nokeyArray_array(JSONELEMENT *array, JSONELEMENT *element){
+	if (array->type != typeOfJsonElement::_ArraysArray)
+	{
+		cout << "can only add to an arrays  array with this function";
+		return;
+	}
+	if (element->type != typeOfJsonElement::_NoKeyArray)
+	{
+		cout << "can only add a  no key value with this function";
+		return;
+	}
+	array->elmenetsptr.push_back(element);
+
+
+}
+
+
+void R_add_tonokeyArray_array(JSONELEMENT *array, std::vector<JSONELEMENT *> elements){
+	for (size_t i = 0; i < elements.size(); i++)
+	{
+		elements.at(i)->lastJsonInArray = false;
+		R_add_to_nokeyArray_array(array, elements.at(i));
+	}
+	elements.at(elements.size() - 1)->lastJsonInArray = true;
+
+
+
+}
+
 
 void JSONBuilder::R_bundle(JSONELEMENT *element)
 {

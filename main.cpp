@@ -17,8 +17,8 @@ string readFileIntoString(const string& path);
 int main()
 {
 
-  string vc = "{}";
-  auto dd=readFileIntoString("C:/VSCode/JsonParserProject/data.json");
+
+  auto dd=readFileIntoString("./data.json");
   
   JSONString2JsonElement js2e;
 
@@ -31,7 +31,18 @@ int main()
   auto fcx = jb.R_create_Key_value("helclo", 4555);
   jb.R_add_to_object(obj, fc);
   jb.R_add_to_object(obj, fcx);
-  cout << obj->str();
+
+
+JSONBuilder jb_2;
+auto flights=js2e.FindJSONElementByKey(Object_,"shaites");
+//auto fl=jb_2.R_create_nokeyArray_array();
+
+cout<<flights.at(0)->str();
+
+
+
+
+ // cout << obj->str();
   auto master = jb.R_create_json_object("mize");
   auto arrnokey = jb.R_create_noneKey_array("noKeyArr");
   auto cvcv = jb.R_create_nokey_value("false");
@@ -47,10 +58,10 @@ int main()
   //auto res =js2e.FindJSONElementByKey(master,"false");
 
   auto res =js2e.FindJSONElementByKeyUnderSpecificKeyHirerchy(Object_,"cc","arrayman");
-  cout << '\n'
-       << jb.str();
+ // cout << '\n'
+  //     << jb.str();
 
-  std::cout << "from jsonparser";
+ // std::cout << "from jsonparser";
 
   return 0;
 }
