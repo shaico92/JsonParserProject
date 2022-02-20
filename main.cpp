@@ -18,7 +18,7 @@ int main()
 {
 
 
-  auto dd=readFileIntoString("./data.json");
+  auto dd=readFileIntoString("C:/VSCode/JsonParserProject/data.json");
   
   JSONString2JsonElement js2e;
 
@@ -34,10 +34,11 @@ int main()
 
 
 JSONBuilder jb_2;
-auto flights=js2e.FindJSONElementByKey(Object_,"shaites");
+auto flights=js2e.FindJSONElementByKey(Object_,"statess");
 //auto fl=jb_2.R_create_nokeyArray_array();
-
-cout<<flights.at(0)->str();
+auto flight = flights.at(0);
+ jb.R_bundle(flight);
+cout<<jb.str();
 
 
 

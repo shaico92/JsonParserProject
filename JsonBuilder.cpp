@@ -35,7 +35,7 @@ JSONELEMENT::JSONELEMENT(const std::string key, const bool value, const typeOfJs
 JSONELEMENT::JSONELEMENT(const std::string key, const double value, const typeOfJsonElement type) : partOfArray(false), key(key + ""), type(type)
 {
 	//this->value=to_string(value);
-	cout << value;
+	//cout << value;
 	ostringstream oss;
 	oss << value;
 	this->value = oss.str();
@@ -52,7 +52,7 @@ string JSONELEMENT::str(int indent) const
 
 	//append(oss, elmenetsptr);
 	oss << '{';
-
+		
 	ToString_refac(oss, elmenetsptr);
 	oss << '}';
 	return oss.str();
@@ -80,6 +80,7 @@ void JSONELEMENT::ToString_refac(std::ostringstream &oss, std::vector<JSONELEMEN
 		{
 
 			oss << e->value;
+			
 		}
 		if (e->type == typeOfJsonElement::_object)
 		{
@@ -91,6 +92,30 @@ void JSONELEMENT::ToString_refac(std::ostringstream &oss, std::vector<JSONELEMEN
 
 			oss << '}';
 		}
+		if (e->type == typeOfJsonElement::_ArraysArray)
+		{
+			oss << '\"' << e->key << '\"' << ':' << '[';
+			if (e->elmenetsptr.size() > 0)
+			{
+                	for  each(auto &&elm in e->elmenetsptr)
+				{
+					oss<<'[';
+						ToString_refac(oss, elm->elmenetsptr);
+						oss<<']';
+						if (!elm->lastJsonInArray)
+						{
+							oss<<',';
+						}
+						
+				}
+				
+
+
+			}
+
+			oss << ']';
+		}
+
 
 		if (e->type == typeOfJsonElement::_NoKeyArray)
 		{
@@ -108,12 +133,12 @@ void JSONELEMENT::ToString_refac(std::ostringstream &oss, std::vector<JSONELEMEN
 
 			if (e->elmenetsptr.size() > 0)
 			{
-				for each (auto &&elm in e->elmenetsptr)
+				for  each(auto &&elm in e->elmenetsptr)
 				{
 					elm->partOfArray = true;
 				}
 
-				ToString_refac(oss, e->elmenetsptr);
+			//	ToString_refac(oss, e->elmenetsptr);
 			}
 
 			oss << ']';
@@ -837,6 +862,8 @@ string JSONString2JsonElement::FindKeyValueEnd(int index, string json, JSONELEME
 					JSONELEMENT *je = new JSONELEMENT();
 					je->type = typeOfJsonElement::_NoKeyValue;
 					je->value = tempValue;
+					je->partOfArray=false;
+					je->lastJsonInArray=false;
 					theObjectSoFar->elmenetsptr.push_back(je);
 
 					index++;
@@ -1014,7 +1041,9 @@ string tempValue;
 				int ind=0;
 
 					FindKeyValueEnd( refToInt,json, jsonNoKeyArray);
-
+					jsonNoKeyArray->partOfArray=false;
+			theObjectSoFar->partOfArray=false;
+			jsonNoKeyArray->lastJsonInArray=false;
 			theObjectSoFar->elmenetsptr.push_back(jsonNoKeyArray);
 					refToInt+=jsonNoKeyArray->entireValuAsString.length();
 

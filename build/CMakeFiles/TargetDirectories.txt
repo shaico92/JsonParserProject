@@ -1,3 +1,3 @@
-/home/shai/Desktop/projects/jsonParser/build/CMakeFiles/rebuild_cache.dir
-/home/shai/Desktop/projects/jsonParser/build/CMakeFiles/edit_cache.dir
-/home/shai/Desktop/projects/jsonParser/build/CMakeFiles/jsonParser.dir
+C:/VSCode/JsonParserProject/build/CMakeFiles/jsonParser.dir
+C:/VSCode/JsonParserProject/build/CMakeFiles/ALL_BUILD.dir
+C:/VSCode/JsonParserProject/build/CMakeFiles/ZERO_CHECK.dir
