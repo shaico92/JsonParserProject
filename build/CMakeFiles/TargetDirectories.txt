@@ -1,3 +1,0 @@
-/home/shai/Desktop/projects/jsonParser/build/CMakeFiles/rebuild_cache.dir
-/home/shai/Desktop/projects/jsonParser/build/CMakeFiles/edit_cache.dir
-/home/shai/Desktop/projects/jsonParser/build/CMakeFiles/jsonParser.dir
