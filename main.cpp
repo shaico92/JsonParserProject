@@ -18,15 +18,25 @@ int main()
 {
 
 
-  auto dd=readFileIntoString("C:/VSCode/JsonParserProject/PublishObjects.json");
+  auto dd=readFileIntoString("../data.json");
   
   JSONString2JsonElement js2e;
 
   auto Object_ = js2e.ParsedObject(dd);
   //cout << Object_->str();
   //
-  auto flights=js2e.FindJSONElementByKey(Object_,"attributes");
+
+
+
+  auto flights=js2e.FindJSONElementByKey(Object_,"statess");
+
+
   JSONBuilder jb;
+auto flight = flights.at(0);
+ jb.R_bundle(flight);
+cout<<jb.str();
+
+
   auto obj = jb.R_create_json_object("wowowsuperKey");
   auto fc = jb.R_create_Key_value("hello", 3.5);
   auto fcx = jb.R_create_Key_value("helclo", 4555);
@@ -37,9 +47,7 @@ int main()
 JSONBuilder jb_2;
 
 //auto fl=jb_2.R_create_nokeyArray_array();
-auto flight = flights.at(0);
- jb.R_bundle(flight);
-//cout<<jb.str();
+
 
 
 

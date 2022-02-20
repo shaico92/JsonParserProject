@@ -164,7 +164,7 @@ void JSONELEMENT::ToString_refac(std::ostringstream &oss, std::vector<JSONELEMEN
 
 	for (auto &e : elmenets)
 	{
-		if (e->partOfArray)
+			if (e->partOfArray)
 		{
 			oss << '{';
 		}
@@ -178,6 +178,7 @@ void JSONELEMENT::ToString_refac(std::ostringstream &oss, std::vector<JSONELEMEN
 		{
 
 			oss << e->value;
+			
 		}
 		if (e->type == typeOfJsonElement::_object)
 		{
@@ -196,7 +197,14 @@ void JSONELEMENT::ToString_refac(std::ostringstream &oss, std::vector<JSONELEMEN
 			{
                 	for  (auto &&elm : e->elmenetsptr)
 				{
-					elm->partOfArray = false;
+					oss<<'[';
+						ToString_refac(oss, elm->elmenetsptr);
+						oss<<']';
+						if (!elm->lastJsonInArray)
+						{
+							oss<<',';
+						}
+						
 				}
 				
 
@@ -228,7 +236,7 @@ void JSONELEMENT::ToString_refac(std::ostringstream &oss, std::vector<JSONELEMEN
 					elm->partOfArray = true;
 				}
 
-				ToString_refac(oss, e->elmenetsptr);
+			//	ToString_refac(oss, e->elmenetsptr);
 			}
 
 			oss << ']';
@@ -532,10 +540,13 @@ JSONELEMENT *JSONString2JsonElement::ConvertToJSONElement(std::string json, int 
 	}
 	if (je->type == typeOfJsonElement::_val)
 	{
+		SetValueType(je);
+		je->value=je->entireValuAsString;
 		jsonElementFather->elmenetsptr.push_back(je);
 	}
 	if (je->type == typeOfJsonElement::_NoKeyArray)
 	{
+		
 		jsonElementFather->elmenetsptr.push_back(je);
 	}
 	if (je->type == typeOfJsonElement::_ObjectsArray)
@@ -756,28 +767,28 @@ string JSONString2JsonElement::FindKeyValueEnd(int index, string json, JSONELEME
 				secondCounter = 0;
 			}
 		}
-
+theObjectSoFar->entireValuAsString=theCurrentJson;
+	int indexInTotalString=0;
 #if CPPSTD == 201402L // std11
 		for (auto &&jsonString : vectorOfJsonObjectsAsStrings)
 		{
-			JSONELEMENT *je = new JSONELEMENT();
-			auto res = ConvertToJSONElement(jsonString, 0, theObjectSoFar, refToInt);
-		//	cout << res->entireValuAsString;
-			//	theObjectSoFar->elmenetsptr.push_back(res);
+		JSONELEMENT* je = new JSONELEMENT();
+				je->entireValuAsString=jsonString;
+		auto res = ConvertToJSONElement(jsonString, 0, je, refToInt);
+		theObjectSoFar->elmenetsptr.push_back(je);
 		}
 #endif
 #if CPPSTD == 201103L || CPPSTD == 199711
 
-	theObjectSoFar->entireValuAsString=theCurrentJson;
-	int indexInTotalString=0;
+	
 		for each (auto &&jsonString in vectorOfJsonObjectsAsStrings)
 		{
 				JSONELEMENT* je = new JSONELEMENT();
 				je->entireValuAsString=jsonString;
 		auto res = ConvertToJSONElement(jsonString, 0, je, refToInt);
 		theObjectSoFar->elmenetsptr.push_back(je);
-		cout<<"ss";
-	//	refToInt+=jsonString.length();
+
+
 		}
 
 	
@@ -791,6 +802,12 @@ string JSONString2JsonElement::FindKeyValueEnd(int index, string json, JSONELEME
 		{
 #if CPPSTD == 201402L
 			for (auto &&elements : theObjectSoFar->elmenetsptr)
+			{
+				elements->lastJsonInArray = false;
+			}
+#endif
+#if CPPSTD == 201103L || CPPSTD == 199711
+			for each(auto &&elements in theObjectSoFar->elmenetsptr)
 			{
 				elements->lastJsonInArray = false;
 			}
@@ -876,6 +893,9 @@ refToInt-=theObjectSoFar->entireValuAsString.length();
 					je->value = tempValue;
 					je->partOfArray=false;
 					je->lastJsonInArray=false;
+					
+					SetValueType(je);
+					
 					theObjectSoFar->elmenetsptr.push_back(je);
 
 					index++;
@@ -1186,6 +1206,7 @@ string tempValue;
 		retString += json[im];
 	}
 index = startIndex;
+
 	return retString;
 		/* code */
 	}
@@ -1205,7 +1226,7 @@ JSONELEMENT *JSONString2JsonElement::ParsedObject(std::string jsonString)
 	cout<<"finish to read and fix file\n";
 	refToInt = 0;
 	ConvertToJSONElement(jsonElementFather->entireValuAsString, i, jsonElementFather, refToInt);
-	FixJsonElementsValues(jsonElementFather);
+//	FixJsonElementsValues(jsonElementFather);
 		cout<<"finish to parsing fix file\n";
 	return jsonElementFather;
 }
@@ -1292,7 +1313,7 @@ void SetValueType(JSONELEMENT *element)
 		(strcmp(TrueOrFalse, TRUE_.c_str()) == 0))
 	{
 		//always a boolean
-		element->valueType = JsonElementValueType::BOOLEAN;
+		element->valueType = JsonElementValueType::_BOOLEAN;
 		return;
 	}
 #endif
