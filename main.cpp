@@ -34,7 +34,15 @@ int main()
   JSONBuilder jb;
 auto flight = flights.at(0);
  jb.R_bundle(flight);
-cout<<jb.str();
+
+
+
+    std::ofstream out("output.json");
+    out << jb.str();
+    out.close();
+
+
+//cout<<jb.str();
 
 
   auto obj = jb.R_create_json_object("wowowsuperKey");
