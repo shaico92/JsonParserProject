@@ -24,7 +24,7 @@ enum JsonElementValueType
 {
 	INTEGER = 0,
 	STRING,
-	BOOLEAN,
+	_BOOLEAN,
 
 };
 

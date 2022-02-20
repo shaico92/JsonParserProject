@@ -511,6 +511,11 @@ JSONELEMENT *JSONString2JsonElement::ConvertToJSONElement(std::string json, int 
 	}
 	//getting the index to ":" position in key value structure
 	i++;
+	if (i>json.length())
+	{
+		return jsonElementFather;
+	}
+	
 
 	//starting to create the object
 	JSONELEMENT *je = new JSONELEMENT();
@@ -523,7 +528,7 @@ JSONELEMENT *JSONString2JsonElement::ConvertToJSONElement(std::string json, int 
 
 	if (je->type == typeOfJsonElement::_object)
 	{
-		jsonElementFather->elmenetsptr.push_back(ConvertToJSONElement(je->entireValuAsString, 0, je, refrenceIndexInRootJsonString));
+		jsonElementFather->elmenetsptr.push_back(ConvertToJSONElement(je->entireValuAsString, 0, je, refToInt));
 	}
 	if (je->type == typeOfJsonElement::_val)
 	{
@@ -571,8 +576,8 @@ JSONELEMENT *JSONString2JsonElement::ConvertToJSONElement(std::string json, int 
 	
 	if (json[refrenceIndexInRootJsonString] == ',')
 	{
-
-		ConvertToJSONElement(jsonElementFather->entireValuAsString, refrenceIndexInRootJsonString, jsonElementFather, refrenceIndexInRootJsonString);
+		
+		ConvertToJSONElement(jsonElementFather->entireValuAsString, refToInt, jsonElementFather, refToInt);
 	}
 	else
 	{
@@ -762,13 +767,20 @@ string JSONString2JsonElement::FindKeyValueEnd(int index, string json, JSONELEME
 		}
 #endif
 #if CPPSTD == 201103L || CPPSTD == 199711
+
+	theObjectSoFar->entireValuAsString=theCurrentJson;
+	int indexInTotalString=0;
 		for each (auto &&jsonString in vectorOfJsonObjectsAsStrings)
 		{
-			JSONELEMENT *je = new JSONELEMENT();
-			auto res = ConvertToJSONElement(jsonString, 0, theObjectSoFar, refToInt);
-		//	cout << res->entireValuAsString;
-			//	theObjectSoFar->elmenetsptr.push_back(res);
+				JSONELEMENT* je = new JSONELEMENT();
+				je->entireValuAsString=jsonString;
+		auto res = ConvertToJSONElement(jsonString, 0, je, refToInt);
+		theObjectSoFar->elmenetsptr.push_back(je);
+		cout<<"ss";
+	//	refToInt+=jsonString.length();
 		}
+
+	
 #endif
 		int sizeOfElementsList = theObjectSoFar->elmenetsptr.size();
 		if (sizeOfElementsList < 1)
@@ -786,8 +798,8 @@ string JSONString2JsonElement::FindKeyValueEnd(int index, string json, JSONELEME
 
 			theObjectSoFar->elmenetsptr.at(sizeOfElementsList - 1)->lastJsonInArray = true;
 		}
-
-		return theCurrentJson;
+refToInt-=theObjectSoFar->entireValuAsString.length();
+		return theObjectSoFar->entireValuAsString;
 	}
 	if (theObjectSoFar->type == typeOfJsonElement::_NoKeyArray)
 	{
@@ -1161,8 +1173,25 @@ string tempValue;
 	{
 		retString += json[im];
 	}
+	if (json[json.length() - 1]==',');
+	{
+		retString="";
+		for (int im = startIndex; im < index; im++)
+	{
+		if (im+2>index&&json[im]==',')
+		{
+			break;
+		}
+		
+		retString += json[im];
+	}
+index = startIndex;
+	return retString;
+		/* code */
+	}
+	
 
-	index = startIndex;
+	
 
 	return retString;
 }
@@ -1173,10 +1202,11 @@ JSONELEMENT *JSONString2JsonElement::ParsedObject(std::string jsonString)
 	JSONELEMENT *jsonElementFather = new JSONELEMENT();
 	
 	jsonElementFather->entireValuAsString = removingTabsAndBreakLines(jsonString);
+	cout<<"finish to read and fix file\n";
 	refToInt = 0;
 	ConvertToJSONElement(jsonElementFather->entireValuAsString, i, jsonElementFather, refToInt);
 	FixJsonElementsValues(jsonElementFather);
-
+		cout<<"finish to parsing fix file\n";
 	return jsonElementFather;
 }
 
@@ -1273,7 +1303,7 @@ void SetValueType(JSONELEMENT *element)
 		(strcmp(TrueOrFalse, TRUE_.c_str()) == 0))
 	{
 		//always a boolean
-		element->valueType = JsonElementValueType::BOOLEAN;
+		element->valueType = JsonElementValueType::_BOOLEAN;
 		return;
 	}
 #endif
