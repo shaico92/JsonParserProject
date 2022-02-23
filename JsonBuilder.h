@@ -7,7 +7,7 @@
 #include <cstring>
 
 #define CPPSTD __cplusplus
-
+#define JSON_PARSER_API __declspec(dllexport)
 #pragma region GeneralObjects
 
 enum typeOfJsonElement
@@ -50,9 +50,9 @@ struct JSONELEMENT
 	JSONELEMENT(const std::string key, const double value, const typeOfJsonElement type);
 	JSONELEMENT(const std::string key, const bool value, const typeOfJsonElement type);
 
-
+	
 	void ToString_refac(std::ostringstream &oss, std::vector<JSONELEMENT *> elmenets) const;
-	std::string str(int indent = 0) const;
+	JSON_PARSER_API	std::string str(int indent = 0) const;
 
 };
 #pragma endregion
@@ -66,39 +66,43 @@ struct JSONBuilder
 	JSONELEMENT *findByKey(std::string key);
 
 	void print();
-	std::string str();
+	JSON_PARSER_API std::string str();
 	std::string str(JSONELEMENT &elementToChoose);
 
 	//after refactor
 
-	void R_add_key_value(std::string key, std::string value, JSONELEMENT *elementToAddTo, JsonElementValueType typeOfval);
-	JSONELEMENT *R_create_json_object(std::string key);
-	JSONELEMENT *R_create_Key_value(std::string key, int value);
-	JSONELEMENT *R_create_Key_value(std::string key, bool value);
-	JSONELEMENT *R_create_Key_value(std::string key, double value);
-	JSONELEMENT *R_create_Key_value(std::string key, std::string value);
-	JSONELEMENT *R_create_noneKey_array(std::string key);
-	JSONELEMENT *R_create_objects_array(std::string key);
-	JSONELEMENT *R_create_nokey_value(std::string value);
-	JSONELEMENT *R_create_nokeyArray_array(std::string key);
-	JSONELEMENT* DEEP_COPY(JSONELEMENT* origin);
+	void  R_add_key_value(std::string key, std::string value, JSONELEMENT *elementToAddTo, JsonElementValueType typeOfval);
+	JSON_PARSER_API	JSONELEMENT*  R_create_json_object(std::string key);
+	JSON_PARSER_API	JSONELEMENT*  R_create_Key_value(std::string key, int value);
+	JSON_PARSER_API	JSONELEMENT*  R_create_Key_value(std::string key, bool value);
+	JSON_PARSER_API	JSONELEMENT*  R_create_Key_value(std::string key, double value);
+	JSON_PARSER_API	JSONELEMENT* R_create_Key_valueS(std::string key, std::string value);
+	JSON_PARSER_API	JSONELEMENT*  R_create_noneKey_array(std::string key);
+	JSON_PARSER_API	JSONELEMENT*  R_create_objects_array(std::string key);
+	JSON_PARSER_API	JSONELEMENT*  R_create_nokey_value(std::string value);
+	JSON_PARSER_API	JSONELEMENT*  R_create_nokeyArray_array(std::string key);
+
 	//no key array
-	void R_add_to_no_key_array(JSONELEMENT *array, JSONELEMENT *element);
-	void R_add_to_no_key_array(JSONELEMENT *array, std::vector<JSONELEMENT *> elements);
+	void JSON_PARSER_API R_add_to_no_key_array(JSONELEMENT *array, JSONELEMENT *element);
+	void JSON_PARSER_API R_add_to_no_key_array(JSONELEMENT *array, std::vector<JSONELEMENT *> elements);
 
 	//objects array
-	void R_add_to_objects_array(JSONELEMENT *array, JSONELEMENT *elements);
-	void R_add_to_objects_array(JSONELEMENT *array, std::vector<JSONELEMENT *> elements);
+	void JSON_PARSER_API R_add_to_objects_array(JSONELEMENT *array, JSONELEMENT *elements);
+	void JSON_PARSER_API R_add_to_objects_array(JSONELEMENT *array, std::vector<JSONELEMENT *> elements);
 
 	//objects
-	void R_add_to_object(JSONELEMENT *jsonObject, JSONELEMENT *element);
-	void R_add_to_object(JSONELEMENT *jsonObject, std::vector<JSONELEMENT *> elements);
+	void JSON_PARSER_API R_add_to_object(JSONELEMENT *jsonObject, JSONELEMENT *element);
+	void JSON_PARSER_API R_add_to_object(JSONELEMENT *jsonObject, std::vector<JSONELEMENT *> elements);
 
 	//arrays array
-	void R_add_to_nokeyArray_array(JSONELEMENT *array, JSONELEMENT *element);
-	void R_add_tonokeyArray_array(JSONELEMENT *array, std::vector<JSONELEMENT *> elements);
+	void JSON_PARSER_API R_add_to_nokeyArray_array(JSONELEMENT *array, JSONELEMENT *element);
+	void JSON_PARSER_API R_add_tonokeyArray_array(JSONELEMENT *array, std::vector<JSONELEMENT *> elements);
 
-	void R_bundle(JSONELEMENT *element);
+
+
+	JSONELEMENT* DEEP_COPY(JSONELEMENT* origin);
+
+	void JSON_PARSER_API R_bundle(JSONELEMENT *element);
 };
 #pragma endregion
 #pragma region JSONString2JsonElement
@@ -116,6 +120,8 @@ struct JSONString2JsonElement
 	std::vector<JSONELEMENT *> FindJSONElementByKeyUnderSpecificKeyHirerchy(JSONELEMENT * element,std::string key,std::string FatherKey);
 
 	void FixJsonElementsValues(JSONELEMENT *father);
+
+	void EmptyAllValues(JSONELEMENT* father);
 };
 #pragma endregion
 
@@ -125,4 +131,22 @@ void SetValueType(JSONELEMENT *element);
 
 char *strncpy(char *dest, char *src, size_t n);
 std::string removingTabsAndBreakLines(std::string json);
+
+
+
+#pragma region JSON_API
+
+
+extern "C"	JSON_PARSER_API JSONELEMENT* pass_string_to_dll(char* json, long size);
+extern "C"	JSON_PARSER_API void* get_string_fromcpp(std::string RequiredString);
+extern "C"	JSON_PARSER_API JSONELEMENT* deep_copy(JSONELEMENT * origin);
+extern "C"	JSON_PARSER_API void  empty_json_structure(JSONELEMENT * father);
+
+
+extern "C"	JSON_PARSER_API std::vector<JSONELEMENT*> findElementsByKey(JSONELEMENT * element, std::string key, std::string FatherKey);
+
+extern "C"	JSON_PARSER_API std::vector<JSONELEMENT*> FindJSONElementByKey(JSONELEMENT* element, std::string key);
+
+extern "C"	JSON_PARSER_API JSONBuilder json_builder();
+
 #pragma endregion
