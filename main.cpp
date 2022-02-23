@@ -16,23 +16,37 @@ string readFileIntoString(const string& path);
 
 int main()
 {
+string strings="";
+string t="";
 
+#if __linux__
 
-  auto dd=readFileIntoString("../data.json");
+ strings=readFileIntoString("../data.json");
+	
+#endif
   
+  #if _WIN32
+
+ strings=readFileIntoString("../../shit.txt");
+
+	
+#endif
   JSONString2JsonElement js2e;
 
-  auto Object_ = js2e.ParsedObject(dd);
+  auto Object_ = js2e.ParsedObject(strings);
   //cout << Object_->str();
   //
-
-
+JSONBuilder jb;
+auto d =jb.DEEP_COPY(Object_);
 
   auto flights=js2e.FindJSONElementByKey(Object_,"statess");
 
 
-  JSONBuilder jb;
+  
 auto flight = flights.at(0);
+
+  
+
  jb.R_bundle(flight);
 
 

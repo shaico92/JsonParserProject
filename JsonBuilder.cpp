@@ -442,7 +442,7 @@ void JSONBuilder::R_add_to_object(JSONELEMENT *jsonObject, vector<JSONELEMENT *>
 }
 
 
-void R_add_to_nokeyArray_array(JSONELEMENT *array, JSONELEMENT *element){
+void JSONBuilder::R_add_to_nokeyArray_array(JSONELEMENT *array, JSONELEMENT *element){
 	if (array->type != typeOfJsonElement::_ArraysArray)
 	{
 		cout << "can only add to an arrays  array with this function";
@@ -459,7 +459,7 @@ void R_add_to_nokeyArray_array(JSONELEMENT *array, JSONELEMENT *element){
 }
 
 
-void R_add_tonokeyArray_array(JSONELEMENT *array, std::vector<JSONELEMENT *> elements){
+void JSONBuilder::R_add_tonokeyArray_array(JSONELEMENT *array, std::vector<JSONELEMENT *> elements){
 	for (size_t i = 0; i < elements.size(); i++)
 	{
 		elements.at(i)->lastJsonInArray = false;
@@ -470,6 +470,36 @@ void R_add_tonokeyArray_array(JSONELEMENT *array, std::vector<JSONELEMENT *> ele
 
 
 }
+
+
+JSONELEMENT* JSONBuilder::DEEP_COPY(JSONELEMENT* origin)
+{
+		JSONELEMENT* copy = new JSONELEMENT();
+		copy->key= origin->key;
+		copy->value= origin->value;
+		copy->lastJsonInArray= origin->lastJsonInArray;
+		copy->partOfArray= origin->partOfArray;
+		copy->type= origin->type;
+		copy->valueType= origin->valueType;
+		
+		if (origin->elmenetsptr.size()>0)
+		{
+			for (size_t i = 0; i < origin->elmenetsptr.size(); i++)
+			{
+				JSONELEMENT* copySon= DEEP_COPY(origin->elmenetsptr.at(i));
+				copy->elmenetsptr.push_back(copySon);
+
+
+			}
+			
+		}
+		
+		
+
+
+return copy;
+}
+
 
 
 void JSONBuilder::R_bundle(JSONELEMENT *element)
@@ -537,12 +567,16 @@ JSONELEMENT *JSONString2JsonElement::ConvertToJSONElement(std::string json, int 
 	if (je->type == typeOfJsonElement::_object)
 	{
 		jsonElementFather->elmenetsptr.push_back(ConvertToJSONElement(je->entireValuAsString, 0, je, refToInt));
+
+			
 	}
 	if (je->type == typeOfJsonElement::_val)
 	{
-		SetValueType(je);
 		je->value=je->entireValuAsString;
+		SetValueType(je);
+		
 		jsonElementFather->elmenetsptr.push_back(je);
+	//	je->entireValuAsString.erase(0,je->entireValuAsString.length());
 	}
 	if (je->type == typeOfJsonElement::_NoKeyArray)
 	{
@@ -589,6 +623,7 @@ JSONELEMENT *JSONString2JsonElement::ConvertToJSONElement(std::string json, int 
 	{
 		
 		ConvertToJSONElement(jsonElementFather->entireValuAsString, refToInt, jsonElementFather, refToInt);
+		//	je->entireValuAsString.erase(0,je->entireValuAsString.length());
 	}
 	else
 	{
@@ -600,26 +635,17 @@ JSONELEMENT *JSONString2JsonElement::ConvertToJSONElement(std::string json, int 
 void JSONString2JsonElement::FixJsonElementsValues(JSONELEMENT *father)
 {
 
+	//this function is empting the memory allocated while parsing the string to json element
+father->entireValuAsString.erase(0,father->entireValuAsString.length()).reserve();
+
 	if (father->elmenetsptr.size() > 0)
 	{
 		for (size_t i = 0; i < father->elmenetsptr.size(); i++)
 		{
-			if (father->elmenetsptr.at(i)->type == typeOfJsonElement::_val)
-			{
-				father->elmenetsptr.at(i)->value = father->elmenetsptr.at(i)->entireValuAsString;
-				SetValueType(father->elmenetsptr.at(i));
-			//	cout << "key : " << father->elmenetsptr.at(i)->key << " type is :" << father->elmenetsptr.at(i)->valueType << " value : " << father->elmenetsptr.at(i)->entireValuAsString << '\n';
 
-				continue;
-			}
-			if (father->elmenetsptr.at(i)->type == typeOfJsonElement::_NoKeyValue)
-			{
-				SetValueType(father->elmenetsptr.at(i));
-			//	cout << "no key value : " << father->elmenetsptr.at(i)->value << '\n';
+			father->elmenetsptr.at(i)->entireValuAsString.erase(0,father->elmenetsptr.at(i)->entireValuAsString.length()).reserve();
 
-				continue;
-			}
-
+					
 			FixJsonElementsValues(father->elmenetsptr.at(i));
 		}
 	}
@@ -1226,7 +1252,7 @@ JSONELEMENT *JSONString2JsonElement::ParsedObject(std::string jsonString)
 	cout<<"finish to read and fix file\n";
 	refToInt = 0;
 	ConvertToJSONElement(jsonElementFather->entireValuAsString, i, jsonElementFather, refToInt);
-//	FixJsonElementsValues(jsonElementFather);
+	FixJsonElementsValues(jsonElementFather);
 		cout<<"finish to parsing fix file\n";
 	return jsonElementFather;
 }

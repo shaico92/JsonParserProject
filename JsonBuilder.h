@@ -81,7 +81,7 @@ struct JSONBuilder
 	JSONELEMENT *R_create_objects_array(std::string key);
 	JSONELEMENT *R_create_nokey_value(std::string value);
 	JSONELEMENT *R_create_nokeyArray_array(std::string key);
-
+	JSONELEMENT* DEEP_COPY(JSONELEMENT* origin);
 	//no key array
 	void R_add_to_no_key_array(JSONELEMENT *array, JSONELEMENT *element);
 	void R_add_to_no_key_array(JSONELEMENT *array, std::vector<JSONELEMENT *> elements);
