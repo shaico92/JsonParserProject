@@ -27,14 +27,14 @@ string t="";
   
   #if _WIN32
 
- strings=readFileIntoString("../../shit.txt");
+ strings=readFileIntoString("C:/Users/shai.c/Downloads/Hai/TWA2 Request-Response Samples/TWA2 Request-Response Samples/PublishObjects.json");
 
 	
 #endif
   JSONString2JsonElement js2e;
 
   auto Object_ = js2e.ParsedObject(strings);
-  //cout << Object_->str();
+  cout << Object_->str();
   //
 JSONBuilder jb;
 auto d =jb.DEEP_COPY(Object_);

@@ -70,6 +70,10 @@ string JSONELEMENT::str(int indent) const
 void JSONELEMENT::ToString_refac(std::ostringstream& oss, std::vector<JSONELEMENT*> elmenets) const
 {
 
+// cout<<"############################################################\n\n";
+
+// cout<<oss.str();
+// cout<<"\n\n############################################################\n\n";
 #if CPPSTD == 201103L || CPPSTD == 199711 // std11
 
 	for each (auto & e in elmenets)
@@ -150,16 +154,18 @@ void JSONELEMENT::ToString_refac(std::ostringstream& oss, std::vector<JSONELEMEN
 
 			if (e->elmenetsptr.size() > 0)
 			{
-				for  each (auto && elm in e->elmenetsptr)
-				{
-					elm->partOfArray = true;
-					if (elm->elmenetsptr.size()>0)
-					{
-						ToString_refac(oss, elm->elmenetsptr);
-					}
-				}
 
-					ToString_refac(oss, e->elmenetsptr);
+				ToString_refac(oss, e->elmenetsptr);
+				// for  each (auto && elm in e->elmenetsptr)
+				// {
+				// 	elm->partOfArray = true;
+				// 	if (elm->elmenetsptr.size()>0)
+				// 	{
+				// 		ToString_refac(oss, elm->elmenetsptr);
+				// 	}
+				// }
+
+					
 			}
 
 			oss << ']';
@@ -631,14 +637,18 @@ JSONELEMENT* JSONString2JsonElement::ConvertToJSONElement(std::string json, int 
 	}
 
 
-
+	if (jsonElementFather->partOfArray)
+	{
+		je->partOfArray=false;
+	}
+	
 
 
 
 
 	if (json[refrenceIndexInRootJsonString] == ',')
 	{
-
+		je->lastJsonInArray=false;
 		ConvertToJSONElement(jsonElementFather->entireValuAsString, refToInt, jsonElementFather, refToInt);
 	}
 	else
