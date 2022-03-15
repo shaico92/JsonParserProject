@@ -27,14 +27,30 @@ string t="";
   
   #if _WIN32
 
- strings=readFileIntoString("C:/Users/shai.c/Downloads/Hai/TWA2 Request-Response Samples/TWA2 Request-Response Samples/PublishObjects.json");
+ strings=readFileIntoString("C:/VSCode/JsonParserProject/data.json");
 
 	
 #endif
   JSONString2JsonElement js2e;
 
   auto Object_ = js2e.ParsedObject(strings);
-  cout << Object_->str();
+    	JSONELEMENT* body = FindJSONElementByKey(Object_, "body").at(0);
+
+
+	
+	vector<JSONELEMENT*> Interactions = FindJSONElementByKey(body, "interactions");
+JSONELEMENT* interactions_ = Interactions.at(0);
+		for (size_t i = 0; i < interactions_->elmenetsptr.size(); i++)
+		{
+
+    JSONELEMENT* parameters = FindJSONElementByKey(interactions_->elmenetsptr.at(i), "parameters").at(0);
+
+    vector<JSONELEMENT*>data =   FindConainersForKeyAndValuesAPI(parameters,"name","\"DetonationLocation\"");
+
+    }
+
+
+
   //
 JSONBuilder jb;
 auto d =jb.DEEP_COPY(Object_);
