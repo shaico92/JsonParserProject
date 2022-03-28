@@ -1,12 +1,3 @@
-// JSON_Parser.cpp : Defines the exported functions for the DLL application.
-//
-
-
-
-
-// JSON_Parser.cpp : Defines the exported functions for the DLL application.
-//
-
 
 
 
@@ -17,7 +8,8 @@
 using namespace std;
 
 #pragma region JsonElement
-JSONELEMENT::JSONELEMENT()
+JSONELEMENT::JSONELEMENT():partOfArray(false),type(typeOfJsonElement::_invalid),key(""),value(""),
+entireValuAsString(""),lastJsonInArray(false)
 {
 }
 
@@ -588,7 +580,11 @@ void JSONBuilder::R_bundle(JSONELEMENT* element)
 }
 
 JSONELEMENT* JSONBuilder::DEEP_COPY(JSONELEMENT* origin)
-{
+{	
+	if (NULL== origin)
+	{
+		return origin;
+	}
 	JSONELEMENT* copy = new JSONELEMENT();
 	copy->key = origin->key;
 	copy->value = origin->value;
@@ -1664,8 +1660,73 @@ vector<JSONELEMENT*> findElementsByKey(JSONELEMENT* element, std::string key, st
 
 	JSONString2JsonElement js2e;
 
+
+
+
+
 	return js2e.FindJSONElementByKeyUnderSpecificKeyHirerchy(element, key, FatherKey);
 
+
+}
+
+JSONELEMENT* findOneElementsByKey(JSONELEMENT* element, std::string key, std::string FatherKey) {
+	bool invalid = false;
+	if (element->type == typeOfJsonElement::_invalid)
+	{
+		return element;
+	}
+	vector<JSONELEMENT*> list = findElementsByKey(element, key, FatherKey);
+	
+	if (list.size() > 0)
+	{
+		return list.at(0);
+	}
+	invalid = true;
+
+	JSONELEMENT* noValues = new JSONELEMENT();
+
+	noValues->key = "";
+	noValues->value = "";
+	noValues->entireValuAsString = "";
+	noValues->lastJsonInArray = false;
+	noValues->partOfArray = false;
+	noValues->type = typeOfJsonElement::_invalid;
+
+	return noValues;
+
+
+}
+JSONELEMENT* FindOneJSONElementByKey(JSONELEMENT* element, std::string key) {
+	JSONString2JsonElement js2e;
+	bool invalid = false;
+	if (NULL== element)
+	{
+		return element;
+	}
+	if (element->type==typeOfJsonElement::_invalid)
+	{
+		return  element;
+	}
+	
+
+	vector<JSONELEMENT*> list = FindJSONElementByKey(element, key);
+
+	if (list.size()>0)
+	{
+		return list.at(0);
+	}
+	invalid = true;
+
+	JSONELEMENT* noValues = new JSONELEMENT();
+
+	noValues->key = "";
+	noValues->value = "";
+	noValues->entireValuAsString = "";
+	noValues->lastJsonInArray = false;
+	noValues->partOfArray = false;
+	noValues->type = typeOfJsonElement::_invalid;
+
+	return noValues;
 
 }
 
@@ -1689,6 +1750,39 @@ std::vector<JSONELEMENT*> FindConainersForKeyAndValuesAPI(JSONELEMENT* element, 
 	JSONString2JsonElement js2e;
 
 	return js2e.FindConainersForKeyAndValues(element, key, value);
+
+}
+JSONELEMENT* FindOneConainersForKeyAndValuesAPI(JSONELEMENT* element, std::string key, std::string value) {
+	bool invalid = false;
+	if (NULL== element)
+	{
+		return element;
+	}
+
+	if (element->type == typeOfJsonElement::_invalid)
+	{
+		return element;
+	}
+	std::vector<JSONELEMENT*> list= 	FindConainersForKeyAndValuesAPI(element, key, value);
+
+	if (list.size() > 0)
+	{
+		return list.at(0);
+	}
+	invalid = true;
+
+	JSONELEMENT* noValues = new JSONELEMENT();
+
+	noValues->key = "";
+	noValues->value = "";
+	noValues->entireValuAsString = "";
+	noValues->lastJsonInArray = false;
+	noValues->partOfArray = false;
+	noValues->type = typeOfJsonElement::_invalid;
+
+	return noValues;
+
+
 
 }
 

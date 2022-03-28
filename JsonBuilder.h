@@ -20,7 +20,8 @@ enum typeOfJsonElement
 	_NoKeyArray,
 	_ObjectsArray,
 	_ArraysArray,
-	_NoKeyValue
+	_NoKeyValue,
+	_invalid
 };
 
 enum JsonElementValueType
@@ -155,10 +156,13 @@ extern "C"	JSON_PARSER_API std::vector<char*>*  delete_ptr();
 
 
 extern "C"	JSON_PARSER_API std::vector<JSONELEMENT*> findElementsByKey(JSONELEMENT * element, std::string key, std::string FatherKey);
+extern "C"	JSON_PARSER_API JSONELEMENT* findOneElementsByKey(JSONELEMENT * element, std::string key, std::string FatherKey);
 
 extern "C"	JSON_PARSER_API std::vector<JSONELEMENT*> FindJSONElementByKey(JSONELEMENT * element, std::string key);
+extern "C"	JSON_PARSER_API JSONELEMENT* FindOneJSONElementByKey(JSONELEMENT * element, std::string key);
 
- JSONBuilder json_builder();
+extern "C"	JSON_PARSER_API  JSONBuilder json_builder();
  extern "C"	JSON_PARSER_API std::vector<JSONELEMENT*> FindConainersForKeyAndValuesAPI(JSONELEMENT* element, std::string key, std::string value);
+ extern "C"	JSON_PARSER_API JSONELEMENT* FindOneConainersForKeyAndValuesAPI(JSONELEMENT * element, std::string key, std::string value);
 #pragma endregion
 
