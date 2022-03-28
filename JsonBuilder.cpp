@@ -236,6 +236,7 @@ void JSONELEMENT::ToString_refac(std::ostringstream& oss, std::vector<JSONELEMEN
 
 	for (auto& e : elmenets)
 	{
+	
 		if (e->partOfArray)
 		{
 			oss << '{';
@@ -244,7 +245,15 @@ void JSONELEMENT::ToString_refac(std::ostringstream& oss, std::vector<JSONELEMEN
 		if (e->type == typeOfJsonElement::_val)
 		{
 
-			oss << '\"' << e->key << '\"' << ':' << e->value;
+			oss << '\"' << e->key << '\"' << ':';
+			if (e->value.length()<1)
+			{
+				oss << '\"'<<0 << '\"';
+				
+			}
+			else {
+				oss << e->value;
+			}
 		}
 		if (e->type == typeOfJsonElement::_NoKeyValue)
 		{
@@ -254,20 +263,29 @@ void JSONELEMENT::ToString_refac(std::ostringstream& oss, std::vector<JSONELEMEN
 		}
 		if (e->type == typeOfJsonElement::_object)
 		{
-			oss << '\"' << e->key << '\"' << ':' << '{';
+			if (e->key.length() > 0)
+			{
+				oss << '\"' << e->key << '\"' << ':' << '{';
+			}
+
+
 			if (e->elmenetsptr.size() > 0)
 			{
 				ToString_refac(oss, e->elmenetsptr);
 			}
+			if (e->key.length() > 0)
+			{
+				oss << '}';
+			}
 
-			oss << '}';
+
 		}
 		if (e->type == typeOfJsonElement::_ArraysArray)
 		{
 			oss << '\"' << e->key << '\"' << ':' << '[';
 			if (e->elmenetsptr.size() > 0)
 			{
-				for (auto&& elm : e->elmenetsptr)
+				for(auto && elm : e->elmenetsptr)
 				{
 					oss << '[';
 					ToString_refac(oss, elm->elmenetsptr);
@@ -303,12 +321,11 @@ void JSONELEMENT::ToString_refac(std::ostringstream& oss, std::vector<JSONELEMEN
 
 			if (e->elmenetsptr.size() > 0)
 			{
-				for (auto&& elm : e->elmenetsptr)
-				{
-					elm->partOfArray = true;
-				}
 
-				//	ToString_refac(oss, e->elmenetsptr);
+				ToString_refac(oss, e->elmenetsptr);
+			
+
+
 			}
 
 			oss << ']';
@@ -317,14 +334,22 @@ void JSONELEMENT::ToString_refac(std::ostringstream& oss, std::vector<JSONELEMEN
 		if (e->partOfArray)
 		{
 			oss << '}';
-	}
+		}
+		
 
 		if (e->lastJsonInArray)
 		{
 		}
 		else
 		{
-			oss << ',';
+			if (seperator.length() > 0)
+			{
+				oss << seperator;
+			}
+			else {
+
+				oss << ',';
+			}
 		}
 }
 
@@ -919,6 +944,7 @@ string JSONString2JsonElement::FindKeyValueEnd(int index, string json, JSONELEME
 			je->entireValuAsString = jsonString;
 			auto res = ConvertToJSONElement(jsonString, 0, je, refToInt);
 			je->partOfArray = true;
+			je->type = typeOfJsonElement::_object;
 			theObjectSoFar->elmenetsptr.push_back(je);
 		}
 #endif
