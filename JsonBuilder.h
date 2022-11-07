@@ -50,12 +50,24 @@ struct JSONELEMENT
 	JSONELEMENT();
 
 	JSONELEMENT(const std::string key, const std::string value, const typeOfJsonElement type);
+	 JSON_PARSER_API  JSONELEMENT* GetSon(const std::string keyName) ;
+	 
+		JSON_PARSER_API JSONELEMENT*		  GetSon(int childIndex) ;
+		JSON_PARSER_API int GetValueInt();
+		
+		JSON_PARSER_API std::string GetValueString(bool SerlizeToString= false);
+		JSON_PARSER_API bool GetValueBool();
+		JSON_PARSER_API long long GetValueLongLong();
+		JSON_PARSER_API float GetValueFloat();
+
 
 	JSONELEMENT(const std::string key, const typeOfJsonElement type);
 	JSONELEMENT(const std::string key, const int value, const typeOfJsonElement type);
 	JSONELEMENT(const std::string key, const long value, const typeOfJsonElement type);
 	JSONELEMENT(const std::string key, const double value, const typeOfJsonElement type);
 	JSONELEMENT(const std::string key, const bool value, const typeOfJsonElement type);
+
+	JSONELEMENT(const std::string key, const __int64 value, const typeOfJsonElement type);
 	JSON_PARSER_API ~JSONELEMENT();
 
 	void ToString_refac(std::ostringstream& oss, std::vector<JSONELEMENT*> elmenets, std::string seperator="") const;
@@ -84,11 +96,15 @@ struct JSONBuilder
 	JSON_PARSER_API	JSONELEMENT* R_create_Key_value(std::string key, int value);
 	JSON_PARSER_API	JSONELEMENT* R_create_Key_value(std::string key, bool value);
 	JSON_PARSER_API	JSONELEMENT* R_create_Key_value(std::string key, double value);
+	JSON_PARSER_API	JSONELEMENT* R_create_Key_value(std::string key, __int64 value);
+	JSON_PARSER_API	JSONELEMENT* R_create_Key_value(std::string key, std::string value);
 	JSON_PARSER_API	JSONELEMENT* R_create_Key_valueS(std::string key, std::string value);
 	JSON_PARSER_API	JSONELEMENT* R_create_Key_valueSWithParenthesis(std::string key, std::string value);
+	JSON_PARSER_API	JSONELEMENT* R_create_no_Key_valueSWithParenthesis(std::string value);
 	JSON_PARSER_API	JSONELEMENT* R_create_noneKey_array(std::string key);
 	JSON_PARSER_API	JSONELEMENT* R_create_objects_array(std::string key);
 	JSON_PARSER_API	JSONELEMENT* R_create_nokey_value(std::string value);
+	JSON_PARSER_API JSONELEMENT* R_create_nokey_value(const int value);
 	JSON_PARSER_API	JSONELEMENT* R_create_nokeyArray_array(std::string key);
 
 	//no key array
@@ -144,9 +160,15 @@ std::string removingTabsAndBreakLines(std::string json);
 
 
 #pragma region JSON_API
-
-
-extern "C"	JSON_PARSER_API JSONELEMENT * pass_string_to_dll(char* json, long size);
+static std::vector<JSONELEMENT*> garbageElementsAPI;
+extern "C"  JSON_PARSER_API void deleteUnused();
+									int safeStoi(std::string value);
+									float safeStof(std::string value);
+extern "C"  JSON_PARSER_API  std::string removeParenthesees(std::string value);
+extern "C"  JSON_PARSER_API  std::wstring removeParentheseesWtring(std::wstring value);
+extern "C"  JSON_PARSER_API  std::string addParenthesees(std::string value);
+extern "C"  JSON_PARSER_API JSONELEMENT* convertToObject(std::string data);
+extern "C"	JSON_PARSER_API JSONELEMENT * pass_string_to_dll(char* json, long size,bool addTogarbage=true);
 extern "C"	JSON_PARSER_API char* get_string_fromcpp(std::string RequiredString);
 extern "C"	JSON_PARSER_API JSONELEMENT * deep_copy(JSONELEMENT * origin);
 extern "C"	JSON_PARSER_API void  empty_json_structure(JSONELEMENT * father);
