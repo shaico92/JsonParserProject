@@ -1,3 +1,12 @@
+// JSON_Parser.cpp : Defines the exported functions for the DLL application.
+//
+
+#include "stdafx.h"
+
+
+// JSON_Parser.cpp : Defines the exported functions for the DLL application.
+//
+
 
 
 
@@ -8,34 +17,34 @@
 using namespace std;
 
 #pragma region JsonElement
-JSONELEMENT::JSONELEMENT():partOfArray(false),type(typeOfJsonElement::_invalid),key(""),value(""),
-entireValuAsString(""),lastJsonInArray(false)
+JSONELEMENT::JSONELEMENT()
 {
 }
 
 JSONELEMENT::JSONELEMENT(const std::string key, const std::string value, const typeOfJsonElement type)
 	: key(key), value(value), type(type), partOfArray(false) {
+	this->valueType = STRING;
 	this->value = value;
 
 };
 
-JSONELEMENT::JSONELEMENT(const std::string key, const int value, const typeOfJsonElement type) : partOfArray(false), key(key + ""), value(value + ""), type(type)
+JSONELEMENT::JSONELEMENT(const std::string key, const int value, const typeOfJsonElement type) : partOfArray(false), key(key + ""), type(type)
 {
-	//cout << value;
+	this->valueType = INTEGER;
 	ostringstream oss;
 	oss << value;
 	this->value = oss.str();
 };
 JSONELEMENT::JSONELEMENT(const std::string key, const long value, const typeOfJsonElement type) : partOfArray(false), key(key + ""), value(value + ""), type(type)
 {
-	//cout << value;
+	this->valueType = INTEGER;
 	ostringstream oss;
 	oss << value;
 	this->value = oss.str();
 };
 JSONELEMENT::JSONELEMENT(const std::string key, const bool value, const typeOfJsonElement type) : partOfArray(false), key(key + ""), value(value + ""), type(type)
 {
-
+	this->valueType = _BOOLEAN;
 	if (value)
 	{
 		this->value = "true";
@@ -46,6 +55,96 @@ JSONELEMENT::JSONELEMENT(const std::string key, const bool value, const typeOfJs
 	}
 };
 JSONELEMENT::JSONELEMENT(const std::string key, const double value, const typeOfJsonElement type) : partOfArray(false), key(key + ""), type(type)
+{
+	this->valueType = INTEGER;
+	ostringstream oss;
+	oss << value;
+	this->value = oss.str();
+};
+bool JSONELEMENT::GetValueBool() {
+	if (NULL == this)
+	{
+
+		std::cout << " this object is null";
+		return false;
+	}
+	if (strcmp(this->value.c_str(),"false") == 0)
+	{
+		return false;
+	}
+	if (strcmp(this->value.c_str(), "true") == 0)
+	{
+		return true;
+	}
+
+	return false;
+}
+float JSONELEMENT::GetValueFloat() {
+	if (NULL == this)
+	{
+		return -1;
+	}
+	return safeStof(this->value);
+}
+
+string JSONELEMENT::GetValueString(bool outSideSource) {
+	if (NULL == this)
+	{
+		return "\"\"";
+	}
+	if (!outSideSource)
+	{
+		string x = "";
+		this->value = removeParenthesees(this->value);
+
+		for (size_t i = 0; i < this->value.size(); i++)
+		{
+			if (i+1<this->value.size())
+			{
+				if (this->value[i]=='\\'&& this->value[i+1] == '\"')
+				{
+					continue;
+				}
+				if (this->value[i] == '\\' && this->value[i + 1] == '\\')
+				{
+					x += this->value[i];
+					++i;
+					continue;
+				}
+			}
+			
+			x += this->value[i];
+		}
+
+		return x;
+	}
+	
+	string Modified = "";
+	for (size_t i = 0; i < this->value.size(); i++)
+	{
+		if (this->value[i] == '\\')
+		{
+			Modified += '\\';
+		
+		}
+		if (this->value[i]=='\"')
+		{
+			Modified += '\\';
+		}
+		
+		Modified += this->value[i];
+	}
+
+	return '\"' + Modified+'\"';
+}
+int JSONELEMENT::GetValueInt() {
+	if (NULL==this)
+	{
+		return -1;
+	}
+	return safeStoi(this->value);
+}
+JSONELEMENT::JSONELEMENT(const std::string key, const __int64 value, const typeOfJsonElement type) : partOfArray(false), key(key + ""), type(type)
 {
 	//this->value=to_string(value);
 	//cout << value;
@@ -79,7 +178,27 @@ JSONELEMENT::JSONELEMENT(const std::string key, const typeOfJsonElement type)
 	: key(key), type(type) {
 
 };
+  JSONELEMENT* JSONELEMENT::GetSon(const std::string keyName){
+	JSONELEMENT* POSSIBLE =FindOneJSONElementByKey(this,keyName);
+	if(POSSIBLE->type==typeOfJsonElement::_invalid){
+		return NULL;
+	}
+	return POSSIBLE;
+}
 
+
+JSONELEMENT* JSONELEMENT::GetSon(int childIndex){
+
+	for(size_t i = 0; i<this->elmenetsptr.size();i++){
+	
+		if(i==childIndex){
+			return this->elmenetsptr.at(i);
+		}
+		
+	}
+
+	return NULL;
+}
 string JSONELEMENT::str(string seperator) const
 {
 	ostringstream oss;
@@ -115,10 +234,10 @@ void JSONELEMENT::ToString_refac(std::ostringstream& oss, std::vector<JSONELEMEN
 		{
 
 			oss << '\"' << e->key << '\"' << ':';
-			if (e->value.length()<1)
+			if (e->valueType == STRING)
 			{
-				oss << '\"'<<0 << '\"';
-				
+				oss << e->GetValueString(true);
+		
 			}
 			else {
 				oss << e->value;
@@ -126,8 +245,14 @@ void JSONELEMENT::ToString_refac(std::ostringstream& oss, std::vector<JSONELEMEN
 		}
 		if (e->type == typeOfJsonElement::_NoKeyValue)
 		{
-
-			oss << e->value;
+			if (e->valueType== STRING)
+			{
+				oss << e->GetValueString(true);
+			}
+			else {
+				oss << e->value;
+			}
+			
 
 		}
 		if (e->type == typeOfJsonElement::_object)
@@ -179,7 +304,23 @@ void JSONELEMENT::ToString_refac(std::ostringstream& oss, std::vector<JSONELEMEN
 			oss << '\"' << e->key << '\"' << ':' << '[';
 			if (e->elmenetsptr.size() > 0)
 			{
-				ToString_refac(oss, e->elmenetsptr);
+				for each (auto & elSon in e->elmenetsptr)
+				{
+					if (elSon->valueType == STRING)
+					{
+						oss << elSon->GetValueString(true);
+					
+					}
+					else {
+						oss << elSon->value;
+					}
+					if (!elSon->lastJsonInArray) {
+
+						oss << ',';
+					}
+				}
+				
+				
 			}
 
 			oss << ']';
@@ -236,7 +377,6 @@ void JSONELEMENT::ToString_refac(std::ostringstream& oss, std::vector<JSONELEMEN
 
 	for (auto& e : elmenets)
 	{
-	
 		if (e->partOfArray)
 		{
 			oss << '{';
@@ -245,15 +385,7 @@ void JSONELEMENT::ToString_refac(std::ostringstream& oss, std::vector<JSONELEMEN
 		if (e->type == typeOfJsonElement::_val)
 		{
 
-			oss << '\"' << e->key << '\"' << ':';
-			if (e->value.length()<1)
-			{
-				oss << '\"'<<0 << '\"';
-				
-			}
-			else {
-				oss << e->value;
-			}
+			oss << '\"' << e->key << '\"' << ':' << e->value;
 		}
 		if (e->type == typeOfJsonElement::_NoKeyValue)
 		{
@@ -263,29 +395,20 @@ void JSONELEMENT::ToString_refac(std::ostringstream& oss, std::vector<JSONELEMEN
 		}
 		if (e->type == typeOfJsonElement::_object)
 		{
-			if (e->key.length() > 0)
-			{
-				oss << '\"' << e->key << '\"' << ':' << '{';
-			}
-
-
+			oss << '\"' << e->key << '\"' << ':' << '{';
 			if (e->elmenetsptr.size() > 0)
 			{
 				ToString_refac(oss, e->elmenetsptr);
 			}
-			if (e->key.length() > 0)
-			{
-				oss << '}';
-			}
 
-
+			oss << '}';
 		}
 		if (e->type == typeOfJsonElement::_ArraysArray)
 		{
 			oss << '\"' << e->key << '\"' << ':' << '[';
 			if (e->elmenetsptr.size() > 0)
 			{
-				for(auto && elm : e->elmenetsptr)
+				for (auto&& elm : e->elmenetsptr)
 				{
 					oss << '[';
 					ToString_refac(oss, elm->elmenetsptr);
@@ -321,11 +444,12 @@ void JSONELEMENT::ToString_refac(std::ostringstream& oss, std::vector<JSONELEMEN
 
 			if (e->elmenetsptr.size() > 0)
 			{
+				for (auto&& elm : e->elmenetsptr)
+				{
+					elm->partOfArray = true;
+				}
 
-				ToString_refac(oss, e->elmenetsptr);
-			
-
-
+				//	ToString_refac(oss, e->elmenetsptr);
 			}
 
 			oss << ']';
@@ -334,22 +458,14 @@ void JSONELEMENT::ToString_refac(std::ostringstream& oss, std::vector<JSONELEMEN
 		if (e->partOfArray)
 		{
 			oss << '}';
-		}
-		
+	}
 
 		if (e->lastJsonInArray)
 		{
 		}
 		else
 		{
-			if (seperator.length() > 0)
-			{
-				oss << seperator;
-			}
-			else {
-
-				oss << ',';
-			}
+			oss << ',';
 		}
 }
 
@@ -418,11 +534,44 @@ JSONELEMENT* JSONBuilder::R_create_Key_valueS(const std::string key, const std::
 
 JSONELEMENT* JSONBuilder::R_create_Key_valueSWithParenthesis(std::string key, std::string value)
 {
+	 
+	string Modified = "";
+	for (size_t i = 0; i < value.size(); i++)
+	{
+		if (value[i] == '\"')
+		{
+			Modified += '\\';
+		}
+		Modified += value[i];
+	}
+	
+	
+	JSONELEMENT* obj = new JSONELEMENT(key, Modified, typeOfJsonElement::_val);
+	obj->partOfArray = false;
+	return obj;
+}
+
+JSONELEMENT* JSONBuilder::R_create_no_Key_valueSWithParenthesis( std::string value)
+{
+
+	for (size_t i = 0; i < value.size(); i++) {
+
+		if (value[i] == '\\') {
+			value.insert(i, "\\");
+			i++;
+		}
+
+	}
 	value = '\"' + value + '\"';
+	return R_create_nokey_value(value);
+	
+}
+JSONELEMENT* JSONBuilder::R_create_Key_value(std::string key, std::string value) {
 	JSONELEMENT* obj = new JSONELEMENT(key, value, typeOfJsonElement::_val);
 	obj->partOfArray = false;
 	return obj;
 }
+
 JSONELEMENT* JSONBuilder::R_create_Key_value(const std::string key, const bool value)
 {
 	JSONELEMENT* obj = new JSONELEMENT(key, value, typeOfJsonElement::_val);
@@ -440,11 +589,26 @@ JSONELEMENT* JSONBuilder::R_create_Key_value(const std::string key, const double
 	JSONELEMENT* obj = new JSONELEMENT(key, value, typeOfJsonElement::_val);
 	return obj;
 }
+
+JSONELEMENT* JSONBuilder::R_create_Key_value(const std::string key, const __int64 value)
+{
+	JSONELEMENT* obj = new JSONELEMENT(key, value, typeOfJsonElement::_val);
+	return obj;
+}
 JSONELEMENT* JSONBuilder::R_create_nokey_value(const std::string value)
 {
-	JSONELEMENT* obj = new JSONELEMENT();
-	obj->value = value;
-	obj->type = typeOfJsonElement::_NoKeyValue;
+	JSONELEMENT* obj = new JSONELEMENT("",value, typeOfJsonElement::_NoKeyValue);
+	
+
+	obj->lastJsonInArray=true;
+	return obj;
+}
+JSONELEMENT* JSONBuilder::R_create_nokey_value(const int value)
+{
+	JSONELEMENT* obj = new JSONELEMENT("", value, typeOfJsonElement::_NoKeyValue);
+
+
+	obj->lastJsonInArray = true;
 	return obj;
 }
 
@@ -477,7 +641,20 @@ void JSONBuilder::R_add_to_no_key_array(JSONELEMENT* array, JSONELEMENT* element
 		cout << "can only add a  no key value with this function";
 		return;
 	}
+	if (array->elmenetsptr.size() > 0)
+	{
+		if (array->elmenetsptr.at(0)->lastJsonInArray)
+		{
+			array->elmenetsptr.at(0)->lastJsonInArray = false;
+		}
+
+		array->elmenetsptr.at(array->elmenetsptr.size() - 1)->lastJsonInArray = false;
+	}
+	
 	array->elmenetsptr.push_back(element);
+	element->lastJsonInArray = true;
+	
+	
 }
 
 void JSONBuilder::R_add_to_no_key_array(JSONELEMENT* array, vector<JSONELEMENT*> elements)
@@ -546,6 +723,7 @@ void JSONBuilder::R_add_to_object(JSONELEMENT* jsonObject, JSONELEMENT* element)
 	}
 	else {
 		jsonObject->elmenetsptr.push_back(element);
+		element->partOfArray = false;
 	}
 
 
@@ -843,11 +1021,12 @@ string JSONString2JsonElement::FindKeyValueEnd(int index, string json, JSONELEME
 		int AnotherCounterForParentethees = 0;
 		while (index < json.length())
 		{
-			if (json[index] == '\"' && AnotherCounterForParentethees > 0)
+			if (json[index] == '\"' && AnotherCounterForParentethees > 0
+				&& json[index - 1] != '\\')
 			{
 				AnotherCounterForParentethees--;
 			}
-			else if (json[index] == '\"')
+			else if (json[index] == '\"' && json[index - 1] != '\\')
 			{
 				AnotherCounterForParentethees++;
 			}
@@ -884,14 +1063,18 @@ string JSONString2JsonElement::FindKeyValueEnd(int index, string json, JSONELEME
 		vector<string> vectorOfJsonObjectsAsStrings;
 		while (findex < theCurrentJson.length() - 1)
 		{
-			if (theCurrentJson[findex] == '\"' && stringBracketsCounter > 0)
+		
+			if (json[index] == '\"' && stringBracketsCounter > 0
+				&& json[index - 1] != '\\')
 			{
 				stringBracketsCounter--;
 			}
-			else if (theCurrentJson[findex] == '\"')
+			else if (json[index] == '\"' && json[index - 1] != '\\')
 			{
 				stringBracketsCounter++;
 			}
+
+
 			if (stringBracketsCounter < 1)
 
 			{
@@ -944,7 +1127,6 @@ string JSONString2JsonElement::FindKeyValueEnd(int index, string json, JSONELEME
 			je->entireValuAsString = jsonString;
 			auto res = ConvertToJSONElement(jsonString, 0, je, refToInt);
 			je->partOfArray = true;
-			je->type = typeOfJsonElement::_object;
 			theObjectSoFar->elmenetsptr.push_back(je);
 		}
 #endif
@@ -1001,11 +1183,12 @@ string JSONString2JsonElement::FindKeyValueEnd(int index, string json, JSONELEME
 		string theCurrentJson = "";
 		while (index < json.length())
 		{
-			if (json[index] == '\"' && AnotherCounterForParentethees > 0)
+			if (json[index] == '\"' && AnotherCounterForParentethees > 0 
+				&& json[index - 1] != '\\')
 			{
 				AnotherCounterForParentethees--;
 			}
-			else if (json[index] == '\"')
+			else if (json[index] == '\"' &&json[index - 1] != '\\')
 			{
 				AnotherCounterForParentethees++;
 			}
@@ -1037,7 +1220,7 @@ string JSONString2JsonElement::FindKeyValueEnd(int index, string json, JSONELEME
 		while (index < theCurrentJson.length())
 		{
 			//  [\"na''',me\",1,5,\"f}]f\"]
-			if (theCurrentJson[index] == '\"' && AnotherCounterForParentethees > 0)
+			if (theCurrentJson[index] == '\"' && AnotherCounterForParentethees > 0&& theCurrentJson[index-1]!='\\')
 			{
 
 				tempValue += theCurrentJson[index];
@@ -1244,7 +1427,7 @@ string JSONString2JsonElement::FindKeyValueEnd(int index, string json, JSONELEME
 				jsonNoKeyArray->entireValuAsString = vectorOfJsonObjectsAsStrings.at(zi);
 				jsonNoKeyArray->type = typeOfJsonElement::_NoKeyArray;
 
-				//TODO: fix the naming
+				
 				int ind = 0;
 
 				FindKeyValueEnd(refToInt, json, jsonNoKeyArray);
@@ -1299,10 +1482,13 @@ string JSONString2JsonElement::FindKeyValueEnd(int index, string json, JSONELEME
 			{
 				stringBracketsCounter--;
 			}
-			else if (json[index] == '\"')
+			
+			if (json[index] == '\"' && stringBracketsCounter > 0
+				&& json[index - 1] != '\\')
 			{
-				stringBracketsCounter++;
+				stringBracketsCounter--;
 			}
+			
 			if (stringBracketsCounter < 1)
 
 			{
@@ -1328,14 +1514,16 @@ string JSONString2JsonElement::FindKeyValueEnd(int index, string json, JSONELEME
 	if (theObjectSoFar->type == typeOfJsonElement::_val)
 	{
 		/* code */
-
+	
 		while (index < json.length())
 		{
-			if (json[index] == '\"' && count > 0)
+			if (json[index] == '\"' && count > 0
+				&& json[index - 1] != '\\')
 			{
 				count--;
 			}
-			else if (json[index] == '\"')
+			else if (json[index] == '\"'
+				&& json[index - 1] != '\\')
 			{
 				count++;
 			}
@@ -1608,7 +1796,7 @@ std::string removingTabsAndBreakLines(std::string json)
 #pragma region JSON_API
 
 
-JSONELEMENT* pass_string_to_dll(char* json, long size)
+JSONELEMENT* pass_string_to_dll(char* json, long size, bool addTogarbage)
 {
 	char* jsonStr = new char[size+1];
 	std::string jsonAsString = "";
@@ -1619,6 +1807,11 @@ JSONELEMENT* pass_string_to_dll(char* json, long size)
 	JSONString2JsonElement js2je;
 	//garbage.push_back(json);
 	JSONELEMENT* stringAsObject = js2je.ParsedObject(jsonStr);
+	if (addTogarbage)
+	{
+		garbageElementsAPI.push_back(stringAsObject);
+	}
+
 	delete[size + 1] jsonStr;
 	jsonStr = NULL;
 	return stringAsObject;
@@ -1642,7 +1835,10 @@ JSONELEMENT* deep_copy(JSONELEMENT* origin)
 {
 
 	JSONBuilder jb;
-	return jb.DEEP_COPY(origin);
+
+    JSONELEMENT* garbage_element = jb.DEEP_COPY(origin);
+	garbageElementsAPI.push_back(garbage_element);
+	return garbage_element;
 
 
 
@@ -1727,6 +1923,7 @@ JSONELEMENT* FindOneJSONElementByKey(JSONELEMENT* element, std::string key) {
 	bool invalid = false;
 	if (NULL== element)
 	{
+		cout << "faild to find element key" << key;
 		return element;
 	}
 	if (element->type==typeOfJsonElement::_invalid)
@@ -1739,6 +1936,7 @@ JSONELEMENT* FindOneJSONElementByKey(JSONELEMENT* element, std::string key) {
 
 	if (list.size()>0)
 	{
+
 		return list.at(0);
 	}
 	invalid = true;
@@ -1782,6 +1980,7 @@ JSONELEMENT* FindOneConainersForKeyAndValuesAPI(JSONELEMENT* element, std::strin
 	bool invalid = false;
 	if (NULL== element)
 	{
+		cout << "faild to find element key "<<key<<" with value" << value;
 		return element;
 	}
 
@@ -1812,4 +2011,139 @@ JSONELEMENT* FindOneConainersForKeyAndValuesAPI(JSONELEMENT* element, std::strin
 
 }
 
+
+ JSONELEMENT* convertToObject(std::string data){
+	JSONString2JsonElement obje_;
+	return obje_.ParsedObject(data);
+
+
+}
+void deleteUnused() {
+
+	for (size_t i = 0; i < garbageElementsAPI.size(); i++)
+	{
+		const JSONELEMENT* elementGarbage = garbageElementsAPI.at(i);
+		if (NULL!=elementGarbage)
+		{
+			elementGarbage->~JSONELEMENT();
+		
+		}
+
+	}
+	garbageElementsAPI.clear();
+
+}
+std::string addParenthesees(std::string value){
+
+	value.insert(0,"\"");
+	value+="\"";
+
+	return value;
+
+}
+string removeParenthesees(string value) {
+
+	string noparenthesis = "-1";
+	if (value.length()<1)
+	{
+		return noparenthesis;
+	}
+	 noparenthesis = "";
+	for (size_t i = 1; i < value.length() - 1; i++)
+	{
+		noparenthesis += value[i];
+	}
+	return noparenthesis;
+}
+
+wstring removeParentheseesWtring(wstring value){
+
+	wstring noparenthesis = L"-1";
+	if (value.length() < 1)
+	{
+		return noparenthesis;
+	}
+	noparenthesis = L"";
+	for (size_t i = 1; i < value.length() - 1; i++)
+	{
+		noparenthesis += value[i];
+	}
+	return noparenthesis;
+
+
+}
+int safeStoi(string value) {
+
+	if (!(((int)value[0] > 47 && (int)value[0] < 58) || value[0] == '-'))
+	{
+		std::cout<<"value : " << value << " is not a number";
+		return -1;
+	}
+	for (size_t i = 0; i < value.length(); i++)
+	{
+		if (i > 0)
+		{
+			const char valueChar = value[i];
+			const int valAsASCII = (int)valueChar;
+			bool isNumber = valAsASCII > 47 && valAsASCII < 58;
+			if (!isNumber)
+			{
+				std::cout << "value : " << value << " is not a number";
+				return -1;
+			}
+		}
+
+
+
+
+	}
+	return stoi(value);
+}
+float safeStof(string value) {
+	if (!(((int)value[0] > 47 && (int)value[0] < 58) || value[0] == '-'))
+	{
+		std::cout << "value : " << value << " is not a number";
+		return -1;
+	}
+	for (size_t i = 1; i < value.length(); i++)
+	{
+
+
+
+
+		const char valueChar = value[i];
+
+
+		const int valAsASCII = (int)valueChar;
+		if ((valueChar == '.'))
+		{
+			if ((int)value[i - 1] > 47 && (int)value[i - 1] < 58)
+			{
+				continue;
+			}
+			else {
+				std::cout << "value : " << value << " is not a number";
+				return -1;
+			}
+		}
+		bool isNumber = valAsASCII > 47 && valAsASCII < 58;
+
+
+		if (!isNumber)
+		{
+			std::cout<<"value : " << value << " is not a number";
+			return -1;
+		}
+
+
+
+
+
+	}
+
+
+
+
+	return stof(value);
+}
 #pragma endregion
